@@ -12,25 +12,27 @@ type Props = Pick<
 
 type RightDealer = Dealer & { ignoredKeys: Set<keyof Dealer> };
 
-function NameColumn({
+function ColumnComponent({
   dealer,
+  field,
   onUpdate,
 }: {
   dealer: RightDealer;
+  field: keyof Dealer;
   onUpdate: (dealer: RightDealer) => void;
 }) {
   return (
     <Button
       size="small"
-      type={dealer.ignoredKeys.has("name") ? "primary" : undefined}
+      type={dealer.ignoredKeys.has(field) ? "primary" : undefined}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
 
-        if (dealer.ignoredKeys.has("name")) {
-          dealer.ignoredKeys.delete("name");
+        if (dealer.ignoredKeys.has(field)) {
+          dealer.ignoredKeys.delete(field);
         } else {
-          dealer.ignoredKeys.add("name");
+          dealer.ignoredKeys.add(field);
         }
 
         onUpdate({
@@ -44,9 +46,9 @@ function NameColumn({
         whiteSpace: "nowrap",
         textOverflow: "ellipsis",
       }}
-      title={dealer.name}
+      title={dealer[field]}
     >
-      {dealer.name}
+      {dealer[field]}
     </Button>
   );
 }
@@ -84,20 +86,32 @@ export default function RightTable({
 
   const columns: ColumnsType<RightDealer> = [
     {
-      dataIndex: "seller_id",
       title: "ID",
+      render: (_, dealer) => (
+        <ColumnComponent
+          dealer={dealer}
+          field="seller_id"
+          onUpdate={updateDealer}
+        />
+      ),
       width: "10ch",
     },
     {
       title: "Name",
       render: (_, dealer) => (
-        <NameColumn dealer={dealer} onUpdate={updateDealer} />
+        <ColumnComponent dealer={dealer} field="name" onUpdate={updateDealer} />
       ),
       width: "calc(30ch + 1rem)",
     },
     {
-      dataIndex: "phone_number",
       title: "Phone",
+      render: (_, dealer) => (
+        <ColumnComponent
+          dealer={dealer}
+          field="phone_number"
+          onUpdate={updateDealer}
+        />
+      ),
       width: "20ch",
     },
   ];
