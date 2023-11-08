@@ -1,0 +1,7 @@
+.ant-transfer {
+  height: 600px;
+}
+
+.ant-transfer-list {
+  max-width: calc(50vw - 30px);
+}

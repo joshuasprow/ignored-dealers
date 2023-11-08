@@ -1,8 +1,8 @@
-import db from "../../lib/db";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { getDealers } from "../../lib/dealers";
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  const two = db.prepare("select 1 + 1 as two").get();
+  const dealers = getDealers();
 
-  res.status(200).json({ two });
+  res.status(200).json(dealers);
 }
