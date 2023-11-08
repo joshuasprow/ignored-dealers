@@ -1,7 +1,8 @@
-import { Table, Tag } from "antd";
+import { Button, Table, Tag } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { TransferListProps } from "antd/es/transfer";
 import { TransferListBodyProps } from "antd/es/transfer/ListBody";
+import { useEffect, useMemo, useState } from "react";
 import { Dealer } from "../../lib/dealers";
 
 type Props = Pick<
@@ -9,9 +10,34 @@ type Props = Pick<
   "disabled" | "filteredItems" | "selectedKeys" | "onItemSelect"
 >;
 
-function NameColumn({ dealer }: { dealer: Dealer }) {
+type RightDealer = Dealer & { ignoredKeys: Set<keyof Dealer> };
+
+function NameColumn({
+  dealer,
+  onUpdate,
+}: {
+  dealer: RightDealer;
+  onUpdate: (dealer: RightDealer) => void;
+}) {
   return (
-    <Tag
+    <Button
+      size="small"
+      type={dealer.ignoredKeys.has("name") ? "primary" : undefined}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (dealer.ignoredKeys.has("name")) {
+          dealer.ignoredKeys.delete("name");
+        } else {
+          dealer.ignoredKeys.add("name");
+        }
+
+        onUpdate({
+          ...dealer,
+          ignoredKeys: new Set(dealer.ignoredKeys),
+        });
+      }}
       style={{
         maxWidth: "30ch",
         overflow: "hidden",
@@ -21,8 +47,15 @@ function NameColumn({ dealer }: { dealer: Dealer }) {
       title={dealer.name}
     >
       {dealer.name}
-    </Tag>
+    </Button>
   );
+}
+
+function transformDealers(dealers: Dealer[]) {
+  return dealers.map((d) => {
+    (d as RightDealer).ignoredKeys = new Set();
+    return d as RightDealer;
+  });
 }
 
 export default function RightTable({
@@ -31,7 +64,25 @@ export default function RightTable({
   selectedKeys,
   onItemSelect,
 }: Props) {
-  const columns: ColumnsType<Dealer> = [
+  const [dealers, setDealers] = useState(transformDealers(filteredItems));
+
+  const updateDealer = (dealer: RightDealer) => {
+    const index = dealers.findIndex(
+      (d) => d.search_string === dealer.search_string,
+    );
+
+    if (index < 0) {
+      console.warn(`failed to find dealer ${dealer.search_string}`);
+      return;
+    }
+
+    setDealers((prev) => {
+      prev[index] = dealer;
+      return [...prev];
+    });
+  };
+
+  const columns: ColumnsType<RightDealer> = [
     {
       dataIndex: "seller_id",
       title: "ID",
@@ -39,7 +90,9 @@ export default function RightTable({
     },
     {
       title: "Name",
-      render: (_, dealer) => <NameColumn dealer={dealer} />,
+      render: (_, dealer) => (
+        <NameColumn dealer={dealer} onUpdate={updateDealer} />
+      ),
       width: "calc(30ch + 1rem)",
     },
     {
@@ -49,10 +102,14 @@ export default function RightTable({
     },
   ];
 
+  useEffect(() => {
+    setDealers(transformDealers(filteredItems));
+  }, [filteredItems, setDealers]);
+
   return (
     <Table
       columns={columns}
-      dataSource={filteredItems}
+      dataSource={dealers}
       onRow={({ search_string }) => ({
         onClick: () => {
           if (disabled) return;
@@ -62,7 +119,6 @@ export default function RightTable({
       })}
       rowKey={(row) => row.search_string}
       rowSelection={{
-        hideSelectAll: true,
         getCheckboxProps: (item) => ({
           disabled,
         }),

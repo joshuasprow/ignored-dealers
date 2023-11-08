@@ -19,7 +19,6 @@ export default function DealerTransfer({ dataSource }: Props) {
       filterOption={filterOption}
       rowKey={(row) => row.search_string}
       showSearch
-      showSelectAll={false}
       onChange={setTargetKeys}
       targetKeys={targetKeys}
     >
