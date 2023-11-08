@@ -1,27 +1,25 @@
 import { Transfer, TransferProps } from "antd";
+import { useState } from "react";
 import { Dealer } from "../../lib/dealers";
 import Table from "./Table";
 
-type Props = Pick<
-  TransferProps<Dealer>,
-  "dataSource" | "targetKeys" | "onChange"
->;
+type Props = Pick<TransferProps<Dealer>, "dataSource">;
 
-export default function DealerTransfer({
-  dataSource,
-  targetKeys,
-  onChange,
-}: Props) {
+function filterOption(value: string, option: Dealer) {
+  return option.search_string.includes(value.toLowerCase());
+}
+
+export default function DealerTransfer({ dataSource }: Props) {
+  const [targetKeys, setTargetKeys] = useState<string[]>([]);
+
   return (
     <Transfer<Dealer>
       dataSource={dataSource}
-      filterOption={(value, option) =>
-        option.search_string.includes(value.toLowerCase())
-      }
+      filterOption={filterOption}
       rowKey={(row) => row.search_string}
       showSearch
       showSelectAll={false}
-      onChange={onChange}
+      onChange={setTargetKeys}
       targetKeys={targetKeys}
     >
       {({ direction, disabled, filteredItems, selectedKeys, onItemSelect }) => (

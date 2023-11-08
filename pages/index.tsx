@@ -19,19 +19,5 @@ export const getStaticProps: GetStaticProps<{
 export default function IndexPage({
   dealers,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  const [targetKeys, setTargetKeys] = useState<string[]>([]);
-
-  const handleChange = (nextTargetKeys: string[]) =>
-    setTargetKeys((prev) => {
-      console.log({ prev: prev.length, next: nextTargetKeys.length });
-      return nextTargetKeys;
-    });
-
-  return (
-    <DealerTransfer
-      dataSource={dealers}
-      targetKeys={targetKeys}
-      onChange={handleChange}
-    />
-  );
+  return <DealerTransfer dataSource={dealers} />;
 }
