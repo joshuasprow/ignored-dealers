@@ -6,50 +6,52 @@ import { Dealer } from "../../lib/dealers";
 
 type Props = Pick<
   TransferListProps<Dealer> & TransferListBodyProps<Dealer>,
-  "direction" | "disabled" | "filteredItems" | "selectedKeys" | "onItemSelect"
+  "disabled" | "filteredItems" | "selectedKeys" | "onItemSelect"
 >;
 
-const COLUMNS: ColumnsType<Dealer> = [
-  {
-    dataIndex: "seller_id",
-    title: "ID",
-    width: "10ch",
-  },
-  {
-    dataIndex: "name",
-    title: "Name",
-    render: (name) => (
-      <Tag
-        style={{
-          maxWidth: "30ch",
-          overflow: "hidden",
-          whiteSpace: "nowrap",
-          textOverflow: "ellipsis",
-        }}
-        title={name}
-      >
-        {name}
-      </Tag>
-    ),
-    width: "calc(30ch + 1rem)",
-  },
-  {
-    dataIndex: "phone_number",
-    title: "Phone",
-    width: "20ch",
-  },
-];
+function NameColumn({ dealer }: { dealer: Dealer }) {
+  return (
+    <Tag
+      style={{
+        maxWidth: "30ch",
+        overflow: "hidden",
+        whiteSpace: "nowrap",
+        textOverflow: "ellipsis",
+      }}
+      title={dealer.name}
+    >
+      {dealer.name}
+    </Tag>
+  );
+}
 
-export default function Table({
-  direction,
+export default function LeftTable({
   disabled,
   filteredItems,
   selectedKeys,
   onItemSelect,
 }: Props) {
+  const columns: ColumnsType<Dealer> = [
+    {
+      dataIndex: "seller_id",
+      title: "ID",
+      width: "10ch",
+    },
+    {
+      title: "Name",
+      render: (_, dealer) => <NameColumn dealer={dealer} />,
+      width: "calc(30ch + 1rem)",
+    },
+    {
+      dataIndex: "phone_number",
+      title: "Phone",
+      width: "20ch",
+    },
+  ];
+
   return (
     <AntdTable
-      columns={direction === "left" ? COLUMNS : COLUMNS}
+      columns={columns}
       dataSource={filteredItems}
       onRow={({ search_string }) => ({
         onClick: () => {

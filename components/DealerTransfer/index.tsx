@@ -1,7 +1,8 @@
 import { Transfer, TransferProps } from "antd";
 import { useState } from "react";
 import { Dealer } from "../../lib/dealers";
-import Table from "./Table";
+import RightTable from "./RightTable";
+import LeftTable from "./LeftTable";
 
 type Props = Pick<TransferProps<Dealer>, "dataSource">;
 
@@ -22,15 +23,23 @@ export default function DealerTransfer({ dataSource }: Props) {
       onChange={setTargetKeys}
       targetKeys={targetKeys}
     >
-      {({ direction, disabled, filteredItems, selectedKeys, onItemSelect }) => (
-        <Table
-          direction={direction}
-          disabled={disabled}
-          filteredItems={filteredItems}
-          selectedKeys={selectedKeys}
-          onItemSelect={onItemSelect}
-        />
-      )}
+      {({ direction, disabled, filteredItems, selectedKeys, onItemSelect }) =>
+        direction === "left" ? (
+          <LeftTable
+            disabled={disabled}
+            filteredItems={filteredItems}
+            selectedKeys={selectedKeys}
+            onItemSelect={onItemSelect}
+          />
+        ) : (
+          <RightTable
+            disabled={disabled}
+            filteredItems={filteredItems}
+            selectedKeys={selectedKeys}
+            onItemSelect={onItemSelect}
+          />
+        )
+      }
     </Transfer>
   );
 }
