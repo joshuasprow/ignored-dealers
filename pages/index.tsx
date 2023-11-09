@@ -1,6 +1,9 @@
-import { SearchOutlined, UnorderedListOutlined } from "@ant-design/icons";
-import { Button, Input, List, Space } from "antd";
-import Modal from "antd/es/modal/Modal";
+import {
+  DeleteOutlined,
+  SearchOutlined,
+  UnorderedListOutlined,
+} from "@ant-design/icons";
+import { Badge, Button, Input, List, Modal, Space } from "antd";
 import type { GetStaticProps, InferGetStaticPropsType } from "next";
 import { useState } from "react";
 import DealerTable from "../components/DealerTable";
@@ -49,16 +52,20 @@ export default function IndexPage({
       <Space direction="vertical">
         <Space>
           <Input
+            allowClear
             placeholder="Filter Dealers"
             type="text"
             onChange={(e) => handleQueryChange(e.currentTarget.value)}
+            style={{ minWidth: "50ch" }}
             value={query}
           />
-          <Button
-            disabled={!ignoredTerms.size}
-            icon={<UnorderedListOutlined />}
-            onClick={() => setIgnoredTermsOpen(true)}
-          />
+          <Badge color="blue" count={ignoredTerms.size}>
+            <Button
+              disabled={!ignoredTerms.size}
+              icon={<UnorderedListOutlined />}
+              onClick={() => setIgnoredTermsOpen(true)}
+            />
+          </Badge>
         </Space>
         <DealerTable
           dealers={filtered}
@@ -66,8 +73,8 @@ export default function IndexPage({
           onAddTerm={handleAddTerm}
           onRemoveTerm={handleRemoveTerm}
         />
-        <code>{JSON.stringify(Array.from(ignoredTerms))}</code>
       </Space>
+
       <Modal
         footer={false}
         open={ignoredTermsOpen}
@@ -77,15 +84,24 @@ export default function IndexPage({
         <List>
           {Array.from(ignoredTerms).map((term) => (
             <List.Item key={term}>
-              <Button
-                size="small"
-                icon={<SearchOutlined />}
-                onClick={() => {
-                  handleQueryChange(term);
-                  setIgnoredTermsOpen(false);
-                }}
-              />{" "}
-              {term}
+              <Space>
+                <Button
+                  size="small"
+                  icon={<SearchOutlined />}
+                  onClick={() => {
+                    handleQueryChange(term);
+                    setIgnoredTermsOpen(false);
+                  }}
+                />
+                <span>{term}</span>
+                <Button
+                  size="small"
+                  icon={<DeleteOutlined />}
+                  onClick={() => {
+                    handleRemoveTerm(term);
+                  }}
+                />
+              </Space>
             </List.Item>
           ))}
         </List>

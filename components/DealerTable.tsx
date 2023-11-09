@@ -59,6 +59,7 @@ export default function DealerTable({
           onRemoveTerm={onRemoveTerm}
         />
       ),
+      sorter: (a, b) => a.seller_id.localeCompare(b.seller_id),
       width: "10ch",
     },
     {
@@ -72,6 +73,7 @@ export default function DealerTable({
           onRemoveTerm={onRemoveTerm}
         />
       ),
+      sorter: (a, b) => a.name.localeCompare(b.name),
       width: "calc(30ch + 1rem)",
     },
     {
@@ -84,6 +86,7 @@ export default function DealerTable({
           onRemoveTerm={onRemoveTerm}
         />
       ),
+      sorter: (a, b) => a.phone_number.localeCompare(b.phone_number),
       width: "20ch",
     },
   ];
@@ -95,6 +98,7 @@ export default function DealerTable({
       rowKey={(row) => row.query}
       scroll={{ x: "calc(60ch + 1rem)", y: "400px" }}
       size="small"
+      pagination={{ pageSize: 50 }}
     />
   );
 }
