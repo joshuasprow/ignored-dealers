@@ -1,52 +1,126 @@
-import { Space, Tag } from "antd";
+import {
+  DeleteOutlined,
+  SearchOutlined,
+  UnorderedListOutlined,
+} from "@ant-design/icons";
+import { Badge, Button, Col, Input, Modal, Row, Space, Typography } from "antd";
 import type { GetStaticProps, InferGetStaticPropsType } from "next";
 import { useState } from "react";
-import DealerTransfer from "../components/DealerTransfer";
+import DealerTable from "../components/DealerTable";
 import type { Dealer } from "../lib/dealers";
+import { Term, TermKind } from "../lib/terms";
+
+const { Text } = Typography;
 
 export const getStaticProps: GetStaticProps<{
   dealers: Dealer[];
+  terms: Term[];
 }> = async () => {
-  const res = await fetch("http://localhost:3000/api/dealers");
-  const dealers = await res.json();
+  const [dealers, terms] = await Promise.all([
+    fetch("http://localhost:3000/api/dealers").then((res) => res.json()),
+    fetch("http://localhost:3000/api/terms").then((res) => res.json()),
+  ]);
 
-  return { props: { dealers } };
+  return { props: { dealers, terms } };
 };
 
 export default function IndexPage({
   dealers,
+  terms,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  const [ignoredTerms, setIgnoredTerms] = useState(new Set<string>());
+  const [query, setQuery] = useState("");
+  const [filtered, setFiltered] = useState(dealers);
+  const [ignoredTerms, setIgnoredTerms] = useState<Map<string, TermKind>>(
+    new Map(terms.map(({ value, kind }) => [value, kind])),
+  );
+  const [ignoredTermsOpen, setIgnoredTermsOpen] = useState(false);
 
-  const handleAddTerm = (term: string) =>
+  const handleQueryChange = (query: string) => {
+    setFiltered(() =>
+      dealers.filter((d) =>
+        d.query.includes(query.toLowerCase().replaceAll(" ", "")),
+      ),
+    );
+    setQuery(query);
+  };
+
+  const handleAddTerm = (term: Term) =>
     setIgnoredTerms((prev) => {
-      prev.add(term);
-      return new Set(prev);
+      prev.set(term.value, term.kind);
+      return new Map(prev);
     });
 
-  const handleRemoveTerm = (term: string) =>
+  const handleRemoveTerm = (term: Term) =>
     setIgnoredTerms((prev) => {
-      prev.delete(term);
-      return new Set(prev);
+      prev.delete(term.value);
+      return new Map(prev);
     });
 
   return (
-    <Space direction="vertical">
-      <DealerTransfer
-        dataSource={dealers}
-        ignoredTerms={ignoredTerms}
-        onAddTerm={handleAddTerm}
-        onRemoveTerm={handleRemoveTerm}
-      />
-      <Space style={{ cursor: "pointer", maxWidth: "90vw" }} wrap>
-        {Array.from(ignoredTerms)
-          .sort()
-          .map((term) => (
-            <Tag key={term} onClick={() => handleRemoveTerm(term)}>
-              {term}
-            </Tag>
-          ))}
+    <>
+      <Space direction="vertical" style={{ padding: "0.5rem 0 0 0" }}>
+        <Space>
+          <Input
+            allowClear
+            placeholder="Filter Dealers"
+            type="text"
+            onChange={(e) => handleQueryChange(e.currentTarget.value)}
+            style={{ minWidth: "50ch" }}
+            value={query}
+          />
+          <Badge color="blue" count={ignoredTerms.size}>
+            <Button
+              disabled={!ignoredTerms.size}
+              icon={<UnorderedListOutlined />}
+              onClick={() => setIgnoredTermsOpen(true)}
+            />
+          </Badge>
+        </Space>
+        <DealerTable
+          dealers={filtered}
+          ignoredTerms={ignoredTerms}
+          onAddTerm={handleAddTerm}
+          onRemoveTerm={handleRemoveTerm}
+        />
       </Space>
-    </Space>
+
+      <Modal
+        footer={false}
+        open={ignoredTermsOpen}
+        onCancel={() => setIgnoredTermsOpen(false)}
+        title="All Ignored Terms"
+      >
+        <Space direction="vertical">
+          {Array.from(ignoredTerms.entries()).map(([value, kind]) => (
+            <Row key={value} justify="space-between">
+              <Col style={{ marginRight: "0.5rem" }}>
+                <Button
+                  size="small"
+                  type="primary"
+                  icon={<SearchOutlined />}
+                  onClick={() => {
+                    handleQueryChange(value);
+                    setIgnoredTermsOpen(false);
+                  }}
+                />
+              </Col>
+              <Col style={{ marginRight: "auto" }}>
+                <Text>{value}</Text>
+              </Col>
+              <Col style={{ marginLeft: "0.5rem" }}>
+                <Button
+                  size="small"
+                  danger
+                  icon={<DeleteOutlined />}
+                  onClick={() => {
+                    handleRemoveTerm({ value: value, kind });
+                  }}
+                />
+              </Col>
+            </Row>
+          ))}
+        </Space>
+      </Modal>
+    </>
   );
 }
