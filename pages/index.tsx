@@ -3,7 +3,7 @@ import {
   SearchOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
-import { Badge, Button, Input, List, Modal, Space } from "antd";
+import { Badge, Button, Col, Grid, Input, List, Modal, Row, Space } from "antd";
 import type { GetStaticProps, InferGetStaticPropsType } from "next";
 import { useState } from "react";
 import DealerTable from "../components/DealerTable";
@@ -49,7 +49,7 @@ export default function IndexPage({
 
   return (
     <>
-      <Space direction="vertical">
+      <Space direction="vertical" style={{ padding: "0.5rem 0 0 0" }}>
         <Space>
           <Input
             allowClear
@@ -81,30 +81,36 @@ export default function IndexPage({
         onCancel={() => setIgnoredTermsOpen(false)}
         title="All Ignored Terms"
       >
-        <List>
+        <Space direction="vertical">
           {Array.from(ignoredTerms).map((term) => (
-            <List.Item key={term}>
-              <Space>
+            <Row key={term} justify="space-between">
+              <Col style={{ marginRight: "0.5rem" }}>
                 <Button
                   size="small"
+                  type="primary"
                   icon={<SearchOutlined />}
                   onClick={() => {
                     handleQueryChange(term);
                     setIgnoredTermsOpen(false);
                   }}
                 />
+              </Col>
+              <Col style={{ marginRight: "auto" }}>
                 <span>{term}</span>
+              </Col>
+              <Col style={{ marginLeft: "0.5rem" }}>
                 <Button
                   size="small"
+                  danger
                   icon={<DeleteOutlined />}
                   onClick={() => {
                     handleRemoveTerm(term);
                   }}
                 />
-              </Space>
-            </List.Item>
+              </Col>
+            </Row>
           ))}
-        </List>
+        </Space>
       </Modal>
     </>
   );
