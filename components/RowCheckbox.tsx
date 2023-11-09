@@ -72,6 +72,7 @@ export default function RowCheckbox({
   return (
     <Checkbox
       checked={checked}
+      disabled={checked}
       indeterminate={indeterminate}
       onChange={handleChange}
     />
