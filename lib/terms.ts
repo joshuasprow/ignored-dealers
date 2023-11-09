@@ -15,7 +15,7 @@ const Term = object({
 });
 export type Term = Output<typeof Term>;
 
-export async function getTerms() {
+export function getTerms() {
   const rows = db.prepare(sql.getAll).all();
   const terms: Term[] = [];
 

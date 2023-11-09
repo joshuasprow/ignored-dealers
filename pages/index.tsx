@@ -3,12 +3,14 @@ import {
   SearchOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
-import { Badge, Button, Col, Input, Modal, Row, Space } from "antd";
+import { Badge, Button, Col, Input, Modal, Row, Space, Typography } from "antd";
 import type { GetStaticProps, InferGetStaticPropsType } from "next";
 import { useState } from "react";
 import DealerTable from "../components/DealerTable";
 import type { Dealer } from "../lib/dealers";
-import { Term } from "../lib/terms";
+import { Term, TermKind } from "../lib/terms";
+
+const { Text } = Typography;
 
 export const getStaticProps: GetStaticProps<{
   dealers: Dealer[];
@@ -24,10 +26,13 @@ export const getStaticProps: GetStaticProps<{
 
 export default function IndexPage({
   dealers,
+  terms,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
   const [query, setQuery] = useState("");
   const [filtered, setFiltered] = useState(dealers);
-  const [ignoredTerms, setIgnoredTerms] = useState(new Set<string>());
+  const [ignoredTerms, setIgnoredTerms] = useState<Map<string, TermKind>>(
+    new Map(terms.map(({ value, kind }) => [value, kind])),
+  );
   const [ignoredTermsOpen, setIgnoredTermsOpen] = useState(false);
 
   const handleQueryChange = (query: string) => {
@@ -39,16 +44,16 @@ export default function IndexPage({
     setQuery(query);
   };
 
-  const handleAddTerm = (term: string) =>
+  const handleAddTerm = (term: Term) =>
     setIgnoredTerms((prev) => {
-      prev.add(term);
-      return new Set(prev);
+      prev.set(term.value, term.kind);
+      return new Map(prev);
     });
 
-  const handleRemoveTerm = (term: string) =>
+  const handleRemoveTerm = (term: Term) =>
     setIgnoredTerms((prev) => {
-      prev.delete(term);
-      return new Set(prev);
+      prev.delete(term.value);
+      return new Map(prev);
     });
 
   return (
@@ -86,21 +91,21 @@ export default function IndexPage({
         title="All Ignored Terms"
       >
         <Space direction="vertical">
-          {Array.from(ignoredTerms).map((term) => (
-            <Row key={term} justify="space-between">
+          {Array.from(ignoredTerms.entries()).map(([value, kind]) => (
+            <Row key={value} justify="space-between">
               <Col style={{ marginRight: "0.5rem" }}>
                 <Button
                   size="small"
                   type="primary"
                   icon={<SearchOutlined />}
                   onClick={() => {
-                    handleQueryChange(term);
+                    handleQueryChange(value);
                     setIgnoredTermsOpen(false);
                   }}
                 />
               </Col>
               <Col style={{ marginRight: "auto" }}>
-                <span>{term}</span>
+                <Text>{value}</Text>
               </Col>
               <Col style={{ marginLeft: "0.5rem" }}>
                 <Button
@@ -108,7 +113,7 @@ export default function IndexPage({
                   danger
                   icon={<DeleteOutlined />}
                   onClick={() => {
-                    handleRemoveTerm(term);
+                    handleRemoveTerm({ value: value, kind });
                   }}
                 />
               </Col>
