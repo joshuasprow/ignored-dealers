@@ -36,29 +36,42 @@ export default function DealerTable({
   ];
 
   return (
-    <Table
-      columns={columns}
-      dataSource={dataSource}
-      rowKey={(row) => row.query}
-      rowSelection={{
-        getCheckboxProps: (item) => ({}),
-        onSelect({ query }, selected) {
-          setSelectedRowKeys((prev) => {
-            if (selected) return [...prev, query];
+    <>
+      <Table
+        columns={columns}
+        dataSource={dataSource}
+        rowKey={(row) => row.query}
+        rowSelection={{
+          getCheckboxProps: (item) => ({}),
+          onSelect(dealer, selected) {
+            if (selected) {
+              onAddTerm(dealer.name);
+              onAddTerm(dealer.phone_number);
+              onAddTerm(dealer.seller_id);
+            } else {
+              onRemoveTerm(dealer.name);
+              onRemoveTerm(dealer.phone_number);
+              onRemoveTerm(dealer.seller_id);
+            }
 
-            const index = prev.findIndex((p) => p === query);
+            setSelectedRowKeys((prev) => {
+              if (selected) return [...prev, dealer.query];
 
-            if (index < 0) return prev;
+              const index = prev.findIndex((p) => p === dealer.query);
 
-            prev.splice(index, 1);
+              if (index < 0) return prev;
 
-            return [...prev];
-          });
-        },
-        selectedRowKeys,
-      }}
-      scroll={{ x: "calc(60ch + 1rem)", y: "400px" }}
-      size="small"
-    />
+              prev.splice(index, 1);
+
+              return [...prev];
+            });
+          },
+          selectedRowKeys,
+        }}
+        scroll={{ x: "calc(60ch + 1rem)", y: "400px" }}
+        size="small"
+      />
+      {JSON.stringify(selectedRowKeys)}
+    </>
   );
 }

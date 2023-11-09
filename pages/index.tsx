@@ -1,7 +1,6 @@
 import type { GetStaticProps, InferGetStaticPropsType } from "next";
 import { useState } from "react";
 import DealerTable from "../components/DealerTable";
-import DealerTransfer from "../components/DealerTransfer";
 import type { Dealer } from "../lib/dealers";
 
 export const getStaticProps: GetStaticProps<{
@@ -31,11 +30,14 @@ export default function IndexPage({
     });
 
   return (
-    <DealerTable
-      dataSource={dealers}
-      ignoredTerms={ignoredTerms}
-      onAddTerm={handleAddTerm}
-      onRemoveTerm={handleRemoveTerm}
-    />
+    <>
+      <DealerTable
+        dataSource={dealers}
+        ignoredTerms={ignoredTerms}
+        onAddTerm={handleAddTerm}
+        onRemoveTerm={handleRemoveTerm}
+      />
+      {JSON.stringify(Array.from(ignoredTerms))}
+    </>
   );
 }
