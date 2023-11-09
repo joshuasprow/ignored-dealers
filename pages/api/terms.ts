@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getTerms } from "../../lib/terms";
+import { parse } from "valibot";
+import { addTerm, getTerms, Term } from "../../lib/terms";
 
 // this is just silly...
 const routes = {
@@ -7,7 +8,10 @@ const routes = {
     res.json(getTerms());
   },
   POST(req: NextApiRequest, res: NextApiResponse) {
-    console.log("POST");
+    const term = parse(Term, JSON.parse(req.body));
+
+    addTerm(term);
+
     res.json({ success: true });
   },
   DELETE(req: NextApiRequest, res: NextApiResponse) {
@@ -22,9 +26,14 @@ function isRoute(method?: string): method is keyof typeof routes {
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!isRoute(req.method)) {
-    res.status(405).send(`method ${req.method} not allowed`);
+    res.status(405).json({ error: `method ${req.method} not allowed` });
     return;
   }
 
-  routes[req.method](req, res);
+  try {
+    routes[req.method](req, res);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "something went wrong" });
+  }
 }

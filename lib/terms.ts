@@ -9,7 +9,7 @@ const TermKind = picklist([
 ]);
 export type TermKind = Output<typeof TermKind>;
 
-const Term = object({
+export const Term = object({
   kind: TermKind,
   term: string(),
 });
