@@ -143,10 +143,18 @@ function KindSelect({
 }
 
 export default function IndexPage({
-  dealers,
+  dealers: baseDealers,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
+  const [dealers, setDealers] = useState(baseDealers);
   const [kind, setKind] = useState<DealerKind>("name");
-  const [options, setOptions] = useState<SelectProps<Dealer>["options"]>([]);
+  const [options, setOptions] = useState<DefaultOptionType[]>([]);
+
+  const handleChangeKind = (nextKind: DealerKind) => {
+    setKind(nextKind);
+    setDealers((prevDealers) =>
+      prevDealers.sort((a, b) => a[nextKind].localeCompare(b[nextKind])),
+    );
+  };
 
   const handleSearch = (value: string) => {
     setOptions(value ? dealerSearchResults(dealers, kind, value) : []);
@@ -158,7 +166,7 @@ export default function IndexPage({
 
   return (
     <Space direction="vertical">
-      <KindSelect kind={kind} onChange={setKind} />
+      <KindSelect kind={kind} onChange={handleChangeKind} />
       <AutoComplete
         popupMatchSelectWidth={352}
         style={{ width: 400 }}
