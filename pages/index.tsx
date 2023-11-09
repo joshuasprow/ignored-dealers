@@ -1,6 +1,6 @@
-import { Space, Tag } from "antd";
 import type { GetStaticProps, InferGetStaticPropsType } from "next";
 import { useState } from "react";
+import DealerTable from "../components/DealerTable";
 import DealerTransfer from "../components/DealerTransfer";
 import type { Dealer } from "../lib/dealers";
 
@@ -31,22 +31,11 @@ export default function IndexPage({
     });
 
   return (
-    <Space direction="vertical">
-      <DealerTransfer
-        dataSource={dealers}
-        ignoredTerms={ignoredTerms}
-        onAddTerm={handleAddTerm}
-        onRemoveTerm={handleRemoveTerm}
-      />
-      <Space style={{ cursor: "pointer", maxWidth: "90vw" }} wrap>
-        {Array.from(ignoredTerms)
-          .sort()
-          .map((term) => (
-            <Tag key={term} onClick={() => handleRemoveTerm(term)}>
-              {term}
-            </Tag>
-          ))}
-      </Space>
-    </Space>
+    <DealerTable
+      dataSource={dealers}
+      ignoredTerms={ignoredTerms}
+      onAddTerm={handleAddTerm}
+      onRemoveTerm={handleRemoveTerm}
+    />
   );
 }
