@@ -7,7 +7,7 @@ export default function useTerms() {
   const [_terms, setTerms] = useState<Terms>(new Map());
 
   const init = async (signal: AbortSignal) => {
-    const res = await fetch("http://localhost:3000/api/terms", { signal });
+    const res = await fetch("api/terms", { signal });
     const json = await res.json();
 
     setTerms(() => {
@@ -35,13 +35,10 @@ export default function useTerms() {
   return {
     terms: _terms,
     onAddTerms: async (terms: Term[]) => {
-      const res = await fetch("api/terms", {
+      await fetch("api/terms", {
         method: "POST",
         body: JSON.stringify(terms),
       });
-      const json = await res.json();
-
-      console.log("add terms:", json);
 
       setTerms((prev) => {
         for (const t of terms) {
@@ -52,13 +49,10 @@ export default function useTerms() {
       });
     },
     onRemoveTerms: async (terms: Term[]) => {
-      const res = await fetch("api/terms", {
+      await fetch("api/terms", {
         method: "DELETE",
         body: JSON.stringify(terms),
       });
-      const json = await res.json();
-
-      console.log("remove terms:", json);
 
       setTerms((prev) => {
         for (const t of terms) {

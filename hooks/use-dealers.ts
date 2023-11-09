@@ -8,7 +8,7 @@ export default function useDealers() {
   const [search, setSearch] = useState("");
 
   const init = async (signal: AbortSignal) => {
-    const res = await fetch("http://localhost:3000/api/dealers", { signal });
+    const res = await fetch("api/dealers", { signal });
     const json = await res.json();
 
     dealers = json;
@@ -20,7 +20,7 @@ export default function useDealers() {
     const controller = new AbortController();
     const signal = controller.signal;
 
-    init(signal)
+    init(signal);
 
     return () => {
       controller.abort();
