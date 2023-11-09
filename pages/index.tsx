@@ -1,80 +1,21 @@
 import {
   DeleteOutlined,
-  LoadingOutlined,
   SearchOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
 import { Badge, Button, Col, Input, Modal, Row, Space, Typography } from "antd";
-import type { GetStaticProps, InferGetStaticPropsType } from "next";
 import { useState } from "react";
 import DealerTable from "../components/DealerTable";
 import useDealers from "../hooks/use-dealers";
-import { Term, TermKind } from "../lib/terms";
+import useTerms from "../hooks/use-terms";
 
 const { Text } = Typography;
 
-export const getStaticProps: GetStaticProps<{
-  terms: Term[];
-}> = async () => {
-  const terms = await fetch("http://localhost:3000/api/terms").then((res) =>
-    res.json(),
-  );
-
-  return { props: { terms } };
-};
-
-export default function IndexPage({
-  terms,
-}: InferGetStaticPropsType<typeof getStaticProps>) {
+export default function IndexPage() {
   const { dealers, search, onSearch } = useDealers();
+  const { terms, onAddTerms, onRemoveTerms } = useTerms();
 
-  const [ignoredTerms, setIgnoredTerms] = useState<Map<string, TermKind>>(
-    new Map(terms.map(({ term: value, kind }) => [value, kind])),
-  );
-  const [ignoredTermsOpen, setIgnoredTermsOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const handleAddTerms = async (terms: Term[]) => {
-    setLoading(true);
-
-    const res = await fetch("api/terms", {
-      method: "POST",
-      body: JSON.stringify(terms),
-    });
-    const json = await res.json();
-
-    console.log("add term:", json);
-
-    setIgnoredTerms((prev) => {
-      for (const term of terms) {
-        prev.set(term.term, term.kind);
-      }
-      return new Map(prev);
-    });
-
-    setLoading(false);
-  };
-
-  const handleRemoveTerms = async (terms: Term[]) => {
-    setLoading(true);
-
-    const res = await fetch("api/terms", {
-      method: "POST",
-      body: JSON.stringify(terms),
-    });
-    const json = await res.json();
-
-    console.log("remove term:", json);
-
-    setIgnoredTerms((prev) => {
-      for (const term of terms) {
-        prev.delete(term.term);
-      }
-      return new Map(prev);
-    });
-
-    setLoading(false);
-  };
+  const [termsOpen, setTermsOpen] = useState(false);
 
   return (
     <>
@@ -88,33 +29,30 @@ export default function IndexPage({
             style={{ minWidth: "50ch" }}
             value={search}
           />
-          <Badge color="blue" count={ignoredTerms.size}>
+          <Badge color="blue" count={terms.size}>
             <Button
-              disabled={!ignoredTerms.size}
+              disabled={!terms.size}
               icon={<UnorderedListOutlined />}
-              onClick={() => setIgnoredTermsOpen(true)}
+              onClick={() => setTermsOpen(true)}
             />
           </Badge>
-          <LoadingOutlined
-            style={{ visibility: loading ? undefined : "hidden" }}
-          />
         </Space>
         <DealerTable
           dealers={dealers}
-          ignoredTerms={ignoredTerms}
-          onAddTerms={handleAddTerms}
-          onRemoveTerms={handleRemoveTerms}
+          ignoredTerms={terms}
+          onAddTerms={onAddTerms}
+          onRemoveTerms={onRemoveTerms}
         />
       </Space>
 
       <Modal
         footer={false}
-        open={ignoredTermsOpen}
-        onCancel={() => setIgnoredTermsOpen(false)}
+        open={termsOpen}
+        onCancel={() => setTermsOpen(false)}
         title="All Ignored Terms"
       >
         <Space direction="vertical">
-          {Array.from(ignoredTerms.entries()).map(([value, kind]) => (
+          {Array.from(terms.entries()).map(([value, kind]) => (
             <Row key={value} justify="space-between">
               <Col style={{ marginRight: "0.5rem" }}>
                 <Button
@@ -123,7 +61,7 @@ export default function IndexPage({
                   icon={<SearchOutlined />}
                   onClick={() => {
                     onSearch(value);
-                    setIgnoredTermsOpen(false);
+                    setTermsOpen(false);
                   }}
                 />
               </Col>
@@ -136,7 +74,7 @@ export default function IndexPage({
                   danger
                   icon={<DeleteOutlined />}
                   onClick={() => {
-                    handleRemoveTerms([{ term: value, kind }]);
+                    onRemoveTerms([{ term: value, kind }]);
                   }}
                 />
               </Col>

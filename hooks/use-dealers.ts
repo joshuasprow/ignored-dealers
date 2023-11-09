@@ -20,7 +20,7 @@ export default function useDealers() {
     const controller = new AbortController();
     const signal = controller.signal;
 
-    init(signal).then();
+    init(signal)
 
     return () => {
       controller.abort();
