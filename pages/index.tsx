@@ -3,19 +3,23 @@ import {
   SearchOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
-import { Badge, Button, Col, Grid, Input, List, Modal, Row, Space } from "antd";
+import { Badge, Button, Col, Input, Modal, Row, Space } from "antd";
 import type { GetStaticProps, InferGetStaticPropsType } from "next";
 import { useState } from "react";
 import DealerTable from "../components/DealerTable";
 import type { Dealer } from "../lib/dealers";
+import { Term } from "../lib/terms";
 
 export const getStaticProps: GetStaticProps<{
   dealers: Dealer[];
+  terms: Term[];
 }> = async () => {
-  const res = await fetch("http://localhost:3000/api/dealers");
-  const dealers = await res.json();
+  const [dealers, terms] = await Promise.all([
+    fetch("http://localhost:3000/api/dealers").then((res) => res.json()),
+    fetch("http://localhost:3000/api/terms").then((res) => res.json()),
+  ]);
 
-  return { props: { dealers } };
+  return { props: { dealers, terms } };
 };
 
 export default function IndexPage({
