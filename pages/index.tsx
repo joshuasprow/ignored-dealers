@@ -1,11 +1,8 @@
-import {
-  DeleteOutlined,
-  SearchOutlined,
-  UnorderedListOutlined,
-} from "@ant-design/icons";
-import { Badge, Button, Col, Input, Modal, Row, Space, Typography } from "antd";
+import { UnorderedListOutlined } from "@ant-design/icons";
+import { Badge, Button, Input, Modal, Space, Typography } from "antd";
 import { useState } from "react";
 import DealerTable from "../components/DealerTable";
+import TermsList from "../components/TermsList";
 import useDealers from "../hooks/use-dealers";
 import useTerms from "../hooks/use-terms";
 
@@ -51,36 +48,14 @@ export default function IndexPage() {
         onCancel={() => setTermsOpen(false)}
         title="All Ignored Terms"
       >
-        <Space direction="vertical">
-          {Array.from(terms.entries()).map(([value, kind]) => (
-            <Row key={value} justify="space-between">
-              <Col style={{ marginRight: "0.5rem" }}>
-                <Button
-                  size="small"
-                  type="primary"
-                  icon={<SearchOutlined />}
-                  onClick={() => {
-                    onSearch(value);
-                    setTermsOpen(false);
-                  }}
-                />
-              </Col>
-              <Col style={{ marginRight: "auto" }}>
-                <Text>{value}</Text>
-              </Col>
-              <Col style={{ marginLeft: "0.5rem" }}>
-                <Button
-                  size="small"
-                  danger
-                  icon={<DeleteOutlined />}
-                  onClick={() => {
-                    onRemoveTerms([{ term: value, kind }]);
-                  }}
-                />
-              </Col>
-            </Row>
-          ))}
-        </Space>
+        <TermsList
+          terms={terms}
+          onSearch={(search) => {
+            onSearch(search);
+            setTermsOpen(false);
+          }}
+          onRemove={(term) => onRemoveTerms([term])}
+        />
       </Modal>
     </>
   );
