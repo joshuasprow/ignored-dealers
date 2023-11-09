@@ -5,7 +5,7 @@ const db = new Database(":memory:");
 
 try {
   db.prepare(dealersSql.create).run();
-  db.prepare(dealersSql.insert).run();
+  db.prepare(dealersSql.init).run();
 } catch (error) {
   console.error(error);
 }

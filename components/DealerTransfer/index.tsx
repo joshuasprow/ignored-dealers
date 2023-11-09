@@ -7,42 +7,22 @@ import LeftTable from "./LeftTable";
 type Props = Required<Pick<TransferProps<Dealer>, "dataSource">>;
 
 function filterOption(value: string, option: Dealer) {
-  return option.search_string.includes(value.toLowerCase());
+  return option.query.includes(value.toLowerCase());
 }
-
-function randomIndices(arrayLength: number, count = 20) {
-  if (arrayLength < count) {
-    count = arrayLength;
-  }
-
-  const indices = new Set<number>();
-
-  for (let i = 0; i < count; i++) {
-    indices.add(Math.floor(Math.random() * arrayLength));
-  }
-
-  return indices;
-}
-
-function randomTargetKeys(dataSource: Props["dataSource"]) {
-  const indices = randomIndices(dataSource.length);
-
-  return dataSource
-    .filter((d, i) => indices.has(i))
-    .map((d) => d.search_string);
-}
-
 export default function DealerTransfer({ dataSource }: Props) {
   const [ignoredTerms, setIgnoredTerms] = useState(new Set<string>());
-  const [targetKeys, setTargetKeys] = useState<string[]>(
-    randomTargetKeys(dataSource),
-  );
+  const [targetKeys, setTargetKeys] = useState<string[]>([]);
 
   const handleChange: TransferProps<Dealer>["onChange"] = (
     nextTargetKeys,
-    _,
+    direction,
     moveKeys,
   ) => {
+    if (direction === "right") {
+      setTargetKeys(nextTargetKeys);
+      return;
+    }
+
     for (const key of moveKeys) {
       ignoredTerms.forEach((value) => {
         if (key.includes(value.toLowerCase())) {
@@ -70,7 +50,7 @@ export default function DealerTransfer({ dataSource }: Props) {
     <Transfer<Dealer>
       dataSource={dataSource}
       filterOption={filterOption}
-      rowKey={(row) => row.search_string}
+      rowKey={(row) => row.query}
       showSearch
       onChange={handleChange}
       targetKeys={targetKeys}

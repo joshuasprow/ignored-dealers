@@ -53,21 +53,21 @@ export default function LeftTable({
     <AntdTable
       columns={columns}
       dataSource={filteredItems}
-      onRow={({ search_string }) => ({
+      onRow={({ query }) => ({
         onClick: () => {
           if (disabled) return;
 
-          onItemSelect(search_string, !selectedKeys.includes(search_string));
+          onItemSelect(query, !selectedKeys.includes(query));
         },
       })}
-      rowKey={(row) => row.search_string}
+      rowKey={(row) => row.query}
       rowSelection={{
         hideSelectAll: true,
         getCheckboxProps: (item) => ({
           disabled,
         }),
-        onSelect({ search_string }, selected) {
-          onItemSelect(search_string, selected);
+        onSelect({ query }, selected) {
+          onItemSelect(query, selected);
         },
         selectedRowKeys: selectedKeys,
       }}
