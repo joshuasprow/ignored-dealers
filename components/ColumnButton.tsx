@@ -8,16 +8,16 @@ type Props = {
   ignoredTerms: Map<string, TermKind>;
   term: Term;
   hasTitle?: boolean;
-  onAddTerm: (term: Term) => void;
-  onRemoveTerm: (term: Term) => void;
+  onAddTerms: (terms: Term[]) => void;
+  onRemoveTerms: (terms: Term[]) => void;
 };
 
 export default function ColumnButton({
   ignoredTerms,
   term,
   hasTitle,
-  onAddTerm,
-  onRemoveTerm,
+  onAddTerms,
+  onRemoveTerms,
 }: Props) {
   const ignored = ignoredTerms.has(term.term);
 
@@ -26,7 +26,7 @@ export default function ColumnButton({
       size="small"
       title={hasTitle ? term.term : undefined}
       type={ignored ? "primary" : undefined}
-      onClick={() => (ignored ? onRemoveTerm(term) : onAddTerm(term))}
+      onClick={() => (ignored ? onRemoveTerms([term]) : onAddTerms([term]))}
     >
       <span
         style={{

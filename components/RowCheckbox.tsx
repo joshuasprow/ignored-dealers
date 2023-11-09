@@ -6,8 +6,8 @@ import { Term, TermKind } from "../lib/terms";
 type Props = {
   dealer: Dealer;
   ignoredTerms: Map<string, TermKind>;
-  onAddTerm: (term: Term) => void;
-  onRemoveTerm: (term: Term) => void;
+  onAddTerms: (terms: Term[]) => void;
+  onRemoveTerms: (terms: Term[]) => void;
 };
 
 function getCheckboxState(
@@ -32,20 +32,11 @@ function getCheckboxState(
   };
 }
 
-function onMultiple(
-  func: Props["onAddTerm"] | Props["onRemoveTerm"],
-  terms: Term[],
-) {
-  for (const term of terms) {
-    func(term);
-  }
-}
-
 export default function RowCheckbox({
   ignoredTerms,
   dealer,
-  onAddTerm,
-  onRemoveTerm,
+  onAddTerms,
+  onRemoveTerms,
 }: Props) {
   const { checked, indeterminate } = getCheckboxState(ignoredTerms, dealer);
 
@@ -63,9 +54,9 @@ export default function RowCheckbox({
     ];
 
     if (e.target.checked) {
-      onMultiple(onAddTerm, terms);
+      onAddTerms(terms);
     } else {
-      onMultiple(onRemoveTerm, terms);
+      onRemoveTerms(terms);
     }
   };
 

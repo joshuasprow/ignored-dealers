@@ -46,38 +46,42 @@ export default function IndexPage({
     setQuery(query);
   };
 
-  const handleAddTerm = async (term: Term) => {
+  const handleAddTerms = async (terms: Term[]) => {
     setLoading(true);
 
     const res = await fetch("api/terms", {
       method: "POST",
-      body: JSON.stringify(term),
+      body: JSON.stringify(terms),
     });
     const json = await res.json();
 
     console.log("add term:", json);
 
     setIgnoredTerms((prev) => {
-      prev.set(term.term, term.kind);
+      for (const term of terms) {
+        prev.set(term.term, term.kind);
+      }
       return new Map(prev);
     });
 
     setLoading(false);
   };
 
-  const handleRemoveTerm = async (term: Term) => {
+  const handleRemoveTerms = async (terms: Term[]) => {
     setLoading(true);
 
     const res = await fetch("api/terms", {
       method: "POST",
-      body: JSON.stringify(term),
+      body: JSON.stringify(terms),
     });
     const json = await res.json();
 
     console.log("remove term:", json);
 
     setIgnoredTerms((prev) => {
-      prev.delete(term.term);
+      for (const term of terms) {
+        prev.delete(term.term);
+      }
       return new Map(prev);
     });
 
@@ -110,8 +114,8 @@ export default function IndexPage({
         <DealerTable
           dealers={filtered}
           ignoredTerms={ignoredTerms}
-          onAddTerm={handleAddTerm}
-          onRemoveTerm={handleRemoveTerm}
+          onAddTerms={handleAddTerms}
+          onRemoveTerms={handleRemoveTerms}
         />
       </Space>
 
@@ -144,7 +148,7 @@ export default function IndexPage({
                   danger
                   icon={<DeleteOutlined />}
                   onClick={() => {
-                    handleRemoveTerm({ term: value, kind });
+                    handleRemoveTerms([{ term: value, kind }]);
                   }}
                 />
               </Col>
