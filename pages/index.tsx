@@ -1,4 +1,4 @@
-import { UnorderedListOutlined } from "@ant-design/icons";
+import { ClearOutlined, UnorderedListOutlined } from "@ant-design/icons";
 import { Badge, Button, Input, Modal, Space, Typography } from "antd";
 import { useState } from "react";
 import DealerTable from "../components/DealerTable";
@@ -19,12 +19,16 @@ export default function IndexPage() {
       <Space direction="vertical" style={{ padding: "0.5rem 0 0 0" }}>
         <Space>
           <Input
-            allowClear
             placeholder="Filter Dealers"
             type="text"
             onChange={(e) => onSearch(e.currentTarget.value)}
             style={{ minWidth: "50ch" }}
             value={search}
+          />
+          <Button
+            disabled={!search}
+            icon={<ClearOutlined />}
+            onClick={() => onSearch("")}
           />
           <Badge color="blue" count={terms.size}>
             <Button

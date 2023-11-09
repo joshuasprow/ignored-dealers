@@ -1,5 +1,5 @@
 import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
-import { Button, Col, Row, Space, Typography } from "antd";
+import { Button, Col, List, Row, Space, Typography } from "antd";
 import type { Term, TermKind } from "../lib/terms";
 
 const { Text } = Typography;
@@ -12,10 +12,11 @@ type Props = {
 
 export default function TermsList({ terms, onSearch, onRemove }: Props) {
   return (
-    <Space direction="vertical">
+    <List>
       {Array.from(terms.entries()).map(([term, kind]) => (
-        <Row key={term} justify="space-between">
-          <Col style={{ marginRight: "0.5rem" }}>
+        <List.Item
+          key={term}
+          actions={[
             <Button
               size="small"
               type="primary"
@@ -23,12 +24,7 @@ export default function TermsList({ terms, onSearch, onRemove }: Props) {
               onClick={() => {
                 onSearch(term);
               }}
-            />
-          </Col>
-          <Col style={{ marginRight: "auto" }}>
-            <Text>{term}</Text>
-          </Col>
-          <Col style={{ marginLeft: "0.5rem" }}>
+            />,
             <Button
               size="small"
               danger
@@ -36,10 +32,17 @@ export default function TermsList({ terms, onSearch, onRemove }: Props) {
               onClick={() => {
                 onRemove({ term: term, kind });
               }}
-            />
-          </Col>
-        </Row>
+            />,
+          ]}
+        >
+          <div style={{ width: "100%" }}>
+            <Text type="secondary" style={{ float: "right" }}>
+              {kind.replaceAll("dealer_", "")}
+            </Text>
+            <Text>{term}</Text>
+          </div>
+        </List.Item>
       ))}
-    </Space>
+    </List>
   );
 }
