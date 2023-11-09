@@ -8,43 +8,31 @@ import { Badge, Button, Col, Input, Modal, Row, Space, Typography } from "antd";
 import type { GetStaticProps, InferGetStaticPropsType } from "next";
 import { useState } from "react";
 import DealerTable from "../components/DealerTable";
-import type { Dealer } from "../lib/dealers";
+import useDealers from "../hooks/use-dealers";
 import { Term, TermKind } from "../lib/terms";
 
 const { Text } = Typography;
 
 export const getStaticProps: GetStaticProps<{
-  dealers: Dealer[];
   terms: Term[];
 }> = async () => {
-  const [dealers, terms] = await Promise.all([
-    fetch("http://localhost:3000/api/dealers").then((res) => res.json()),
-    fetch("http://localhost:3000/api/terms").then((res) => res.json()),
-  ]);
+  const terms = await fetch("http://localhost:3000/api/terms").then((res) =>
+    res.json(),
+  );
 
-  return { props: { dealers, terms } };
+  return { props: { terms } };
 };
 
 export default function IndexPage({
-  dealers,
   terms,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  const [query, setQuery] = useState("");
-  const [filtered, setFiltered] = useState(dealers);
+  const { dealers, search, onSearch } = useDealers();
+
   const [ignoredTerms, setIgnoredTerms] = useState<Map<string, TermKind>>(
     new Map(terms.map(({ term: value, kind }) => [value, kind])),
   );
   const [ignoredTermsOpen, setIgnoredTermsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  const handleQueryChange = (query: string) => {
-    setFiltered(() =>
-      dealers.filter((d) =>
-        d.query.includes(query.toLowerCase().replaceAll(" ", "")),
-      ),
-    );
-    setQuery(query);
-  };
 
   const handleAddTerms = async (terms: Term[]) => {
     setLoading(true);
@@ -96,9 +84,9 @@ export default function IndexPage({
             allowClear
             placeholder="Filter Dealers"
             type="text"
-            onChange={(e) => handleQueryChange(e.currentTarget.value)}
+            onChange={(e) => onSearch(e.currentTarget.value)}
             style={{ minWidth: "50ch" }}
-            value={query}
+            value={search}
           />
           <Badge color="blue" count={ignoredTerms.size}>
             <Button
@@ -112,7 +100,7 @@ export default function IndexPage({
           />
         </Space>
         <DealerTable
-          dealers={filtered}
+          dealers={dealers}
           ignoredTerms={ignoredTerms}
           onAddTerms={handleAddTerms}
           onRemoveTerms={handleRemoveTerms}
@@ -134,7 +122,7 @@ export default function IndexPage({
                   type="primary"
                   icon={<SearchOutlined />}
                   onClick={() => {
-                    handleQueryChange(value);
+                    onSearch(value);
                     setIgnoredTermsOpen(false);
                   }}
                 />
