@@ -34,8 +34,6 @@ export function addTerms(terms: Term[]) {
   for (const term of terms) {
     stmt.run([term.kind, term.term]);
   }
-
-  return getTerms();
 }
 
 export function removeTerms(terms: Term[]) {
@@ -44,6 +42,4 @@ export function removeTerms(terms: Term[]) {
   for (const term of terms) {
     stmt.run([term.kind, term.term]);
   }
-
-  return getTerms();
 }

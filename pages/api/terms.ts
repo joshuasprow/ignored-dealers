@@ -8,13 +8,9 @@ const routes = {
     res.json(getTerms());
   },
   POST(req: NextApiRequest, res: NextApiResponse) {
-    let terms = parse(array(Term), JSON.parse(req.body));
+    const terms = parse(array(Term), JSON.parse(req.body));
 
-    console.log(terms.length);
-
-    terms = addTerms(terms);
-
-    console.log(terms.length);
+    addTerms(terms);
 
     res.json({});
   },
