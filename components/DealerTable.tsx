@@ -1,6 +1,5 @@
-import { Button, Table, type TableProps } from "antd";
+import { Button, Checkbox, Table, type TableProps } from "antd";
 import { ColumnsType } from "antd/es/table";
-import { useState } from "react";
 import { Dealer } from "../lib/dealers";
 
 type Props = {
@@ -50,6 +49,33 @@ export default function DealerTable({
 }: Props) {
   const columns: ColumnsType<Dealer> = [
     {
+      key: "checkbox",
+      render: (_, dealer) => {
+        return (
+          <Checkbox
+            checked={
+              ignoredTerms.has(dealer.seller_id) &&
+              ignoredTerms.has(dealer.name) &&
+              ignoredTerms.has(dealer.phone_number)
+            }
+            onChange={(e) => {
+              if (e.target.checked) {
+                onAddTerm(dealer.seller_id);
+                onAddTerm(dealer.name);
+                onAddTerm(dealer.phone_number);
+              } else {
+                onRemoveTerm(dealer.seller_id);
+                onRemoveTerm(dealer.name);
+                onRemoveTerm(dealer.phone_number);
+              }
+            }}
+          />
+        );
+      },
+      width: 36,
+    },
+    {
+      dataIndex: "seller_id",
       title: "ID",
       render: (_, dealer) => (
         <ColumnButton
@@ -60,9 +86,10 @@ export default function DealerTable({
         />
       ),
       sorter: (a, b) => a.seller_id.localeCompare(b.seller_id),
-      width: "10ch",
+      width: 64,
     },
     {
+      dataIndex: "name",
       title: "Name",
       render: (_, dealer) => (
         <ColumnButton
@@ -74,9 +101,10 @@ export default function DealerTable({
         />
       ),
       sorter: (a, b) => a.name.localeCompare(b.name),
-      width: "calc(30ch + 1rem)",
+      width: "34ch",
     },
     {
+      dataIndex: "phone_number",
       title: "Phone",
       render: (_, dealer) => (
         <ColumnButton
@@ -87,7 +115,6 @@ export default function DealerTable({
         />
       ),
       sorter: (a, b) => a.phone_number.localeCompare(b.phone_number),
-      width: "20ch",
     },
   ];
 
@@ -96,8 +123,9 @@ export default function DealerTable({
       columns={columns}
       dataSource={dealers}
       rowKey={(row) => row.query}
-      scroll={{ x: "calc(60ch + 1rem)", y: "400px" }}
+      scroll={{ y: 400 }}
       size="small"
+      style={{ maxWidth: 600 }}
       pagination={{ pageSize: 50 }}
     />
   );
