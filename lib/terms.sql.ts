@@ -12,7 +12,7 @@ select kind,
 from ignored_terms;`,
   init: `
 insert into ignored_terms (kind, "value")
-values ('dealer-name', 'Don'''s');`,
+values ('dealer-name', 'Don''s');`,
 } as const;
 
 export default sql;
