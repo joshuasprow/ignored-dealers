@@ -4,7 +4,6 @@ import {
   SearchOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
-import Icon from "@ant-design/icons/lib/components/Icon";
 import { Badge, Button, Col, Input, Modal, Row, Space, Typography } from "antd";
 import type { GetStaticProps, InferGetStaticPropsType } from "next";
 import { useState } from "react";
@@ -21,9 +20,6 @@ export const getStaticProps: GetStaticProps<{
   const [dealers, terms] = await Promise.all([
     fetch("http://localhost:3000/api/dealers").then((res) => res.json()),
     fetch("http://localhost:3000/api/terms").then((res) => res.json()),
-    fetch("http://localhost:3000/api/terms", { method: "delete" }).then((res) =>
-      res.json(),
-    ),
   ]);
 
   return { props: { dealers, terms } };
