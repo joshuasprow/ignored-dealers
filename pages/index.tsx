@@ -1,8 +1,10 @@
 import {
   DeleteOutlined,
+  LoadingOutlined,
   SearchOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
+import Icon from "@ant-design/icons/lib/components/Icon";
 import { Badge, Button, Col, Input, Modal, Row, Space, Typography } from "antd";
 import type { GetStaticProps, InferGetStaticPropsType } from "next";
 import { useState } from "react";
@@ -105,6 +107,9 @@ export default function IndexPage({
               onClick={() => setIgnoredTermsOpen(true)}
             />
           </Badge>
+          <LoadingOutlined
+            style={{ visibility: loading ? undefined : "hidden" }}
+          />
         </Space>
         <DealerTable
           dealers={filtered}

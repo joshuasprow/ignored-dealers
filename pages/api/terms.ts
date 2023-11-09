@@ -12,11 +12,11 @@ const routes = {
 
     addTerm(term);
 
-    res.json({ success: true });
+    res.json({});
   },
   DELETE(req: NextApiRequest, res: NextApiResponse) {
     console.log("DELETE");
-    res.json({ success: true });
+    res.json({});
   },
 } as const;
 
