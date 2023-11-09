@@ -48,8 +48,6 @@ export default function DealerTable({
   onAddTerm,
   onRemoveTerm,
 }: Props) {
-  const [selectedRowKeys, setSelectedRowKeys] = useState<string[]>([]);
-
   const columns: ColumnsType<Dealer> = [
     {
       title: "ID",
@@ -91,15 +89,12 @@ export default function DealerTable({
   ];
 
   return (
-    <>
-      <Table
-        columns={columns}
-        dataSource={dealers}
-        rowKey={(row) => row.query}
-        scroll={{ x: "calc(60ch + 1rem)", y: "400px" }}
-        size="small"
-      />
-      {JSON.stringify(selectedRowKeys)}
-    </>
+    <Table
+      columns={columns}
+      dataSource={dealers}
+      rowKey={(row) => row.query}
+      scroll={{ x: "calc(60ch + 1rem)", y: "400px" }}
+      size="small"
+    />
   );
 }
