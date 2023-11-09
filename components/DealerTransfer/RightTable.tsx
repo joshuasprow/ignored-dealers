@@ -8,37 +8,39 @@ import { Dealer } from "../../lib/dealers";
 type Props = Pick<
   TransferListProps<Dealer> & TransferListBodyProps<Dealer>,
   "disabled" | "filteredItems" | "selectedKeys" | "onItemSelect"
->;
+> & {
+  ignoredTerms: Set<string>;
+  onAddTerm: (term: string) => void;
+  onRemoveTerm: (term: string) => void;
+};
 
-type RightDealer = Dealer & { ignoredKeys: Set<keyof Dealer> };
+type IgnoredKey = Extract<keyof Dealer, "name" | "phone_number" | "seller_id">;
 
 function ColumnComponent({
   dealer,
-  field,
-  onUpdate,
+  ignoreKey,
+  ignoredTerms,
+  onAddTerm,
+  onRemoveTerm,
 }: {
-  dealer: RightDealer;
-  field: keyof Dealer;
-  onUpdate: (dealer: RightDealer) => void;
-}) {
+  dealer: Dealer;
+  ignoreKey: IgnoredKey;
+} & Pick<Props, "ignoredTerms" | "onAddTerm" | "onRemoveTerm">) {
+  const term = dealer[ignoreKey];
+
   return (
     <Button
       size="small"
-      type={dealer.ignoredKeys.has(field) ? "primary" : undefined}
+      type={ignoredTerms.has(term) ? "primary" : undefined}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
 
-        if (dealer.ignoredKeys.has(field)) {
-          dealer.ignoredKeys.delete(field);
+        if (ignoredTerms.has(term)) {
+          onRemoveTerm(term);
         } else {
-          dealer.ignoredKeys.add(field);
+          onAddTerm(term);
         }
-
-        onUpdate({
-          ...dealer,
-          ignoredKeys: new Set(dealer.ignoredKeys),
-        });
       }}
       style={{
         maxWidth: "30ch",
@@ -46,52 +48,32 @@ function ColumnComponent({
         whiteSpace: "nowrap",
         textOverflow: "ellipsis",
       }}
-      title={dealer[field]}
+      title={dealer[ignoreKey]}
     >
-      {dealer[field]}
+      {dealer[ignoreKey]}
     </Button>
   );
-}
-
-function transformDealers(dealers: Dealer[]) {
-  return dealers.map((d) => {
-    (d as RightDealer).ignoredKeys = new Set();
-    return d as RightDealer;
-  });
 }
 
 export default function RightTable({
   disabled,
   filteredItems,
+  ignoredTerms,
   selectedKeys,
+  onAddTerm,
+  onRemoveTerm,
   onItemSelect,
 }: Props) {
-  const [dealers, setDealers] = useState(transformDealers(filteredItems));
-
-  const updateDealer = (dealer: RightDealer) => {
-    const index = dealers.findIndex(
-      (d) => d.search_string === dealer.search_string,
-    );
-
-    if (index < 0) {
-      console.warn(`failed to find dealer ${dealer.search_string}`);
-      return;
-    }
-
-    setDealers((prev) => {
-      prev[index] = dealer;
-      return [...prev];
-    });
-  };
-
-  const columns: ColumnsType<RightDealer> = [
+  const columns: ColumnsType<Dealer> = [
     {
       title: "ID",
       render: (_, dealer) => (
         <ColumnComponent
           dealer={dealer}
-          field="seller_id"
-          onUpdate={updateDealer}
+          ignoredTerms={ignoredTerms}
+          ignoreKey="seller_id"
+          onAddTerm={onAddTerm}
+          onRemoveTerm={onRemoveTerm}
         />
       ),
       width: "10ch",
@@ -99,7 +81,13 @@ export default function RightTable({
     {
       title: "Name",
       render: (_, dealer) => (
-        <ColumnComponent dealer={dealer} field="name" onUpdate={updateDealer} />
+        <ColumnComponent
+          dealer={dealer}
+          ignoredTerms={ignoredTerms}
+          ignoreKey="name"
+          onAddTerm={onAddTerm}
+          onRemoveTerm={onRemoveTerm}
+        />
       ),
       width: "calc(30ch + 1rem)",
     },
@@ -108,22 +96,20 @@ export default function RightTable({
       render: (_, dealer) => (
         <ColumnComponent
           dealer={dealer}
-          field="phone_number"
-          onUpdate={updateDealer}
+          ignoredTerms={ignoredTerms}
+          ignoreKey="phone_number"
+          onAddTerm={onAddTerm}
+          onRemoveTerm={onRemoveTerm}
         />
       ),
       width: "20ch",
     },
   ];
 
-  useEffect(() => {
-    setDealers(transformDealers(filteredItems));
-  }, [filteredItems, setDealers]);
-
   return (
     <Table
       columns={columns}
-      dataSource={dealers}
+      dataSource={filteredItems}
       onRow={({ search_string }) => ({
         onClick: () => {
           if (disabled) return;

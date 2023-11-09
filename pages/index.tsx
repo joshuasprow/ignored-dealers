@@ -1,9 +1,4 @@
-import { AutoComplete, Table, Tag, Transfer } from "antd";
-import { DefaultOptionType } from "antd/es/select";
-import { ColumnsType } from "antd/es/table";
-import { TransferProps } from "antd/es/transfer";
 import type { GetStaticProps, InferGetStaticPropsType } from "next";
-import { useState } from "react";
 import DealerTransfer from "../components/DealerTransfer";
 import type { Dealer } from "../lib/dealers";
 

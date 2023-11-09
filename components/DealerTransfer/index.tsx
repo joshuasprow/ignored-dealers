@@ -11,7 +11,20 @@ function filterOption(value: string, option: Dealer) {
 }
 
 export default function DealerTransfer({ dataSource }: Props) {
+  const [ignoredTerms, setIgnoredTerms] = useState(new Set<string>());
   const [targetKeys, setTargetKeys] = useState<string[]>([]);
+
+  const handleAddTerm = (term: string) =>
+    setIgnoredTerms((prev) => {
+      prev.add(term);
+      return new Set(prev);
+    });
+
+  const handleRemoveTerm = (term: string) =>
+    setIgnoredTerms((prev) => {
+      prev.delete(term);
+      return new Set(prev);
+    });
 
   return (
     <Transfer<Dealer>
@@ -34,7 +47,10 @@ export default function DealerTransfer({ dataSource }: Props) {
           <RightTable
             disabled={disabled}
             filteredItems={filteredItems}
+            ignoredTerms={ignoredTerms}
             selectedKeys={selectedKeys}
+            onAddTerm={handleAddTerm}
+            onRemoveTerm={handleRemoveTerm}
             onItemSelect={onItemSelect}
           />
         )
