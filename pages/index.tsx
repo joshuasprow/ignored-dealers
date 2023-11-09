@@ -1,3 +1,4 @@
+import { Input } from "antd";
 import type { GetStaticProps, InferGetStaticPropsType } from "next";
 import { useState } from "react";
 import DealerTable from "../components/DealerTable";
@@ -15,7 +16,18 @@ export const getStaticProps: GetStaticProps<{
 export default function IndexPage({
   dealers,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
+  const [query, setQuery] = useState("");
+  const [filtered, setFiltered] = useState(dealers);
   const [ignoredTerms, setIgnoredTerms] = useState(new Set<string>());
+
+  const handleQueryChange = (query: string) => {
+    setFiltered(() =>
+      dealers.filter((d) =>
+        d.query.includes(query.toLowerCase().replaceAll(" ", "")),
+      ),
+    );
+    setQuery(query);
+  };
 
   const handleAddTerm = (term: string) =>
     setIgnoredTerms((prev) => {
@@ -31,8 +43,13 @@ export default function IndexPage({
 
   return (
     <>
+      <Input
+        type="text"
+        onChange={(e) => handleQueryChange(e.currentTarget.value)}
+        value={query}
+      />
       <DealerTable
-        dataSource={dealers}
+        dealers={filtered}
         ignoredTerms={ignoredTerms}
         onAddTerm={handleAddTerm}
         onRemoveTerm={handleRemoveTerm}

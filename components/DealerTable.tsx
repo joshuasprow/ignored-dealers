@@ -3,14 +3,47 @@ import { ColumnsType } from "antd/es/table";
 import { useState } from "react";
 import { Dealer } from "../lib/dealers";
 
-type Props = Pick<TableProps<Dealer>, "dataSource"> & {
+type Props = {
+  dealers: TableProps<Dealer>["dataSource"];
   ignoredTerms: Set<string>;
   onAddTerm: (term: string) => void;
   onRemoveTerm: (term: string) => void;
 };
 
+function ColumnButton({
+  hasTitle,
+  ignoredTerms,
+  value,
+  onAddTerm,
+  onRemoveTerm,
+}: Omit<Props, "dealers"> & {
+  hasTitle?: boolean;
+  value: Dealer[keyof Dealer];
+}) {
+  const ignored = ignoredTerms.has(value);
+  return (
+    <Button
+      size="small"
+      title={hasTitle ? value : undefined}
+      type={ignored ? "primary" : undefined}
+      onClick={() => (ignored ? onRemoveTerm(value) : onAddTerm(value))}
+    >
+      <span
+        style={{
+          maxWidth: "30ch",
+          overflow: "hidden",
+          whiteSpace: "nowrap",
+          textOverflow: "ellipsis",
+        }}
+      >
+        {value}
+      </span>
+    </Button>
+  );
+}
+
 export default function DealerTable({
-  dataSource,
+  dealers,
   ignoredTerms,
   onAddTerm,
   onRemoveTerm,
@@ -21,39 +54,37 @@ export default function DealerTable({
     {
       title: "ID",
       render: (_, dealer) => (
-        <span
-          style={{
-            color: ignoredTerms.has(dealer.seller_id) ? "red" : undefined,
-          }}
-        >
-          {dealer.seller_id}
-        </span>
+        <ColumnButton
+          ignoredTerms={ignoredTerms}
+          value={dealer.seller_id}
+          onAddTerm={onAddTerm}
+          onRemoveTerm={onRemoveTerm}
+        />
       ),
       width: "10ch",
     },
     {
       title: "Name",
       render: (_, dealer) => (
-        <span
-          style={{
-            color: ignoredTerms.has(dealer.name) ? "red" : undefined,
-          }}
-        >
-          {dealer.name}
-        </span>
+        <ColumnButton
+          hasTitle
+          ignoredTerms={ignoredTerms}
+          value={dealer.name}
+          onAddTerm={onAddTerm}
+          onRemoveTerm={onRemoveTerm}
+        />
       ),
       width: "calc(30ch + 1rem)",
     },
     {
       title: "Phone",
       render: (_, dealer) => (
-        <span
-          style={{
-            color: ignoredTerms.has(dealer.phone_number) ? "red" : undefined,
-          }}
-        >
-          {dealer.phone_number}
-        </span>
+        <ColumnButton
+          ignoredTerms={ignoredTerms}
+          value={dealer.phone_number}
+          onAddTerm={onAddTerm}
+          onRemoveTerm={onRemoveTerm}
+        />
       ),
       width: "20ch",
     },
@@ -63,35 +94,8 @@ export default function DealerTable({
     <>
       <Table
         columns={columns}
-        dataSource={dataSource}
+        dataSource={dealers}
         rowKey={(row) => row.query}
-        rowSelection={{
-          getCheckboxProps: (item) => ({}),
-          onSelect(dealer, selected) {
-            if (selected) {
-              onAddTerm(dealer.name);
-              onAddTerm(dealer.phone_number);
-              onAddTerm(dealer.seller_id);
-            } else {
-              onRemoveTerm(dealer.name);
-              onRemoveTerm(dealer.phone_number);
-              onRemoveTerm(dealer.seller_id);
-            }
-
-            setSelectedRowKeys((prev) => {
-              if (selected) return [...prev, dealer.query];
-
-              const index = prev.findIndex((p) => p === dealer.query);
-
-              if (index < 0) return prev;
-
-              prev.splice(index, 1);
-
-              return [...prev];
-            });
-          },
-          selectedRowKeys,
-        }}
         scroll={{ x: "calc(60ch + 1rem)", y: "400px" }}
         size="small"
       />
