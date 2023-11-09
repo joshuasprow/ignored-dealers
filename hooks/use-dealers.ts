@@ -30,18 +30,20 @@ export default function useDealers() {
   return {
     dealers: filtered,
     search,
-    onSearch(s: string) {
+    onSearch: (s: string) => {
       setSearch(s);
 
-      setFiltered((f) => {
-        if (!s) return f;
+      setFiltered(() => {
+        if (s) {
+          return dealers.filter((d) =>
+            d.query
+              .toLowerCase()
+              .replaceAll(" ", "")
+              .includes(s.toLowerCase().replaceAll(" ", "")),
+          );
+        }
 
-        return dealers.filter((d) =>
-          d.query
-            .toLowerCase()
-            .replaceAll(" ", "")
-            .includes(s.toLowerCase().replaceAll(" ", "")),
-        );
+        return dealers;
       });
     },
   };
