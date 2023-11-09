@@ -11,7 +11,7 @@ export type TermKind = Output<typeof TermKind>;
 
 const Term = object({
   kind: TermKind,
-  value: string(),
+  term: string(),
 });
 export type Term = Output<typeof Term>;
 
@@ -26,4 +26,12 @@ export function getTerms() {
   }
 
   return terms;
+}
+
+export function addTerm(term: Term) {
+  db.prepare(sql.insert).bind([term.kind, term.term]).run();
+}
+
+export function removeTerm(term: Term) {
+  db.prepare(sql.delete).bind([term.kind, term.term]).run();
 }

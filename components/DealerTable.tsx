@@ -20,12 +20,12 @@ function ColumnButton({
   hasTitle?: boolean;
   term: Term;
 }) {
-  const ignored = ignoredTerms.has(term.value);
+  const ignored = ignoredTerms.has(term.term);
 
   return (
     <Button
       size="small"
-      title={hasTitle ? term.value : undefined}
+      title={hasTitle ? term.term : undefined}
       type={ignored ? "primary" : undefined}
       onClick={() => (ignored ? onRemoveTerm(term) : onAddTerm(term))}
     >
@@ -37,7 +37,7 @@ function ColumnButton({
           textOverflow: "ellipsis",
         }}
       >
-        {term.value}
+        {term.term}
       </span>
     </Button>
   );
@@ -64,22 +64,22 @@ export default function DealerTable({
               if (e.target.checked) {
                 onAddTerm({
                   kind: "dealer_seller_id",
-                  value: dealer.seller_id,
+                  term: dealer.seller_id,
                 });
-                onAddTerm({ kind: "dealer_name", value: dealer.name });
+                onAddTerm({ kind: "dealer_name", term: dealer.name });
                 onAddTerm({
                   kind: "dealer_phone_number",
-                  value: dealer.phone_number,
+                  term: dealer.phone_number,
                 });
               } else {
                 onRemoveTerm({
                   kind: "dealer_seller_id",
-                  value: dealer.seller_id,
+                  term: dealer.seller_id,
                 });
-                onRemoveTerm({ kind: "dealer_name", value: dealer.name });
+                onRemoveTerm({ kind: "dealer_name", term: dealer.name });
                 onRemoveTerm({
                   kind: "dealer_phone_number",
-                  value: dealer.phone_number,
+                  term: dealer.phone_number,
                 });
               }
             }}
@@ -94,7 +94,7 @@ export default function DealerTable({
       render: (_, dealer) => (
         <ColumnButton
           ignoredTerms={ignoredTerms}
-          term={{ kind: "dealer_seller_id", value: dealer.seller_id }}
+          term={{ kind: "dealer_seller_id", term: dealer.seller_id }}
           onAddTerm={onAddTerm}
           onRemoveTerm={onRemoveTerm}
         />
@@ -109,7 +109,7 @@ export default function DealerTable({
         <ColumnButton
           hasTitle
           ignoredTerms={ignoredTerms}
-          term={{ kind: "dealer_name", value: dealer.name }}
+          term={{ kind: "dealer_name", term: dealer.name }}
           onAddTerm={onAddTerm}
           onRemoveTerm={onRemoveTerm}
         />
@@ -123,7 +123,7 @@ export default function DealerTable({
       render: (_, dealer) => (
         <ColumnButton
           ignoredTerms={ignoredTerms}
-          term={{ kind: "dealer_phone_number", value: dealer.phone_number }}
+          term={{ kind: "dealer_phone_number", term: dealer.phone_number }}
           onAddTerm={onAddTerm}
           onRemoveTerm={onRemoveTerm}
         />

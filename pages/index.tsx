@@ -19,6 +19,12 @@ export const getStaticProps: GetStaticProps<{
   const [dealers, terms] = await Promise.all([
     fetch("http://localhost:3000/api/dealers").then((res) => res.json()),
     fetch("http://localhost:3000/api/terms").then((res) => res.json()),
+    fetch("http://localhost:3000/api/terms", { method: "post" }).then((res) =>
+      res.json(),
+    ),
+    fetch("http://localhost:3000/api/terms", { method: "delete" }).then((res) =>
+      res.json(),
+    ),
   ]);
 
   return { props: { dealers, terms } };
@@ -31,7 +37,7 @@ export default function IndexPage({
   const [query, setQuery] = useState("");
   const [filtered, setFiltered] = useState(dealers);
   const [ignoredTerms, setIgnoredTerms] = useState<Map<string, TermKind>>(
-    new Map(terms.map(({ value, kind }) => [value, kind])),
+    new Map(terms.map(({ term: value, kind }) => [value, kind])),
   );
   const [ignoredTermsOpen, setIgnoredTermsOpen] = useState(false);
 
@@ -46,13 +52,13 @@ export default function IndexPage({
 
   const handleAddTerm = (term: Term) =>
     setIgnoredTerms((prev) => {
-      prev.set(term.value, term.kind);
+      prev.set(term.term, term.kind);
       return new Map(prev);
     });
 
   const handleRemoveTerm = (term: Term) =>
     setIgnoredTerms((prev) => {
-      prev.delete(term.value);
+      prev.delete(term.term);
       return new Map(prev);
     });
 
@@ -113,7 +119,7 @@ export default function IndexPage({
                   danger
                   icon={<DeleteOutlined />}
                   onClick={() => {
-                    handleRemoveTerm({ value: value, kind });
+                    handleRemoveTerm({ term: value, kind });
                   }}
                 />
               </Col>
