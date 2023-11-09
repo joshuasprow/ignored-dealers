@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { parse } from "valibot";
-import { addTerm, getTerms, Term } from "../../lib/terms";
+import { array, parse } from "valibot";
+import { addTerms, getTerms, removeTerms, Term } from "../../lib/terms";
 
 // this is just silly...
 const routes = {
@@ -8,14 +8,17 @@ const routes = {
     res.json(getTerms());
   },
   POST(req: NextApiRequest, res: NextApiResponse) {
-    const term = parse(Term, JSON.parse(req.body));
+    const terms = parse(array(Term), JSON.parse(req.body));
 
-    addTerm(term);
+    addTerms(terms);
 
     res.json({});
   },
   DELETE(req: NextApiRequest, res: NextApiResponse) {
-    console.log("DELETE");
+    const terms = parse(array(Term), JSON.parse(req.body));
+
+    removeTerms(terms);
+
     res.json({});
   },
 } as const;

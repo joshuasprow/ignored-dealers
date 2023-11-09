@@ -28,10 +28,18 @@ export function getTerms() {
   return terms;
 }
 
-export function addTerm(term: Term) {
-  db.prepare(sql.insert).bind([term.kind, term.term]).run();
+export function addTerms(terms: Term[]) {
+  const stmt = db.prepare(sql.insert);
+
+  for (const term of terms) {
+    stmt.run([term.kind, term.term]);
+  }
 }
 
-export function removeTerm(term: Term) {
-  db.prepare(sql.delete).bind([term.kind, term.term]).run();
+export function removeTerms(terms: Term[]) {
+  const stmt = db.prepare(sql.delete);
+
+  for (const term of terms) {
+    stmt.run([term.kind, term.term]);
+  }
 }

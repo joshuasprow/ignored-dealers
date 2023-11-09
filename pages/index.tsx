@@ -4,7 +4,6 @@ import {
   SearchOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
-import Icon from "@ant-design/icons/lib/components/Icon";
 import { Badge, Button, Col, Input, Modal, Row, Space, Typography } from "antd";
 import type { GetStaticProps, InferGetStaticPropsType } from "next";
 import { useState } from "react";
@@ -21,9 +20,6 @@ export const getStaticProps: GetStaticProps<{
   const [dealers, terms] = await Promise.all([
     fetch("http://localhost:3000/api/dealers").then((res) => res.json()),
     fetch("http://localhost:3000/api/terms").then((res) => res.json()),
-    fetch("http://localhost:3000/api/terms", { method: "delete" }).then((res) =>
-      res.json(),
-    ),
   ]);
 
   return { props: { dealers, terms } };
@@ -50,38 +46,42 @@ export default function IndexPage({
     setQuery(query);
   };
 
-  const handleAddTerm = async (term: Term) => {
+  const handleAddTerms = async (terms: Term[]) => {
     setLoading(true);
 
     const res = await fetch("api/terms", {
       method: "POST",
-      body: JSON.stringify(term),
+      body: JSON.stringify(terms),
     });
     const json = await res.json();
 
     console.log("add term:", json);
 
     setIgnoredTerms((prev) => {
-      prev.set(term.term, term.kind);
+      for (const term of terms) {
+        prev.set(term.term, term.kind);
+      }
       return new Map(prev);
     });
 
     setLoading(false);
   };
 
-  const handleRemoveTerm = async (term: Term) => {
+  const handleRemoveTerms = async (terms: Term[]) => {
     setLoading(true);
 
     const res = await fetch("api/terms", {
       method: "POST",
-      body: JSON.stringify(term),
+      body: JSON.stringify(terms),
     });
     const json = await res.json();
 
     console.log("remove term:", json);
 
     setIgnoredTerms((prev) => {
-      prev.delete(term.term);
+      for (const term of terms) {
+        prev.delete(term.term);
+      }
       return new Map(prev);
     });
 
@@ -114,8 +114,8 @@ export default function IndexPage({
         <DealerTable
           dealers={filtered}
           ignoredTerms={ignoredTerms}
-          onAddTerm={handleAddTerm}
-          onRemoveTerm={handleRemoveTerm}
+          onAddTerms={handleAddTerms}
+          onRemoveTerms={handleRemoveTerms}
         />
       </Space>
 
@@ -148,7 +148,7 @@ export default function IndexPage({
                   danger
                   icon={<DeleteOutlined />}
                   onClick={() => {
-                    handleRemoveTerm({ term: value, kind });
+                    handleRemoveTerms([{ term: value, kind }]);
                   }}
                 />
               </Col>
