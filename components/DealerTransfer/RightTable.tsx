@@ -1,8 +1,7 @@
-import { Button, Table, Tag } from "antd";
+import { Button, Table } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { TransferListProps } from "antd/es/transfer";
 import { TransferListBodyProps } from "antd/es/transfer/ListBody";
-import { useEffect, useMemo, useState } from "react";
 import { Dealer } from "../../lib/dealers";
 
 type Props = Pick<

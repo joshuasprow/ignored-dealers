@@ -11,3 +11,7 @@ const Term = object({
   kind: TermKind,
   value: string(),
 });
+
+export async function getTerms() {
+    
+}

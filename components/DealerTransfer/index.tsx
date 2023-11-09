@@ -1,16 +1,24 @@
 import { Transfer, TransferProps } from "antd";
 import { useState } from "react";
 import { Dealer } from "../../lib/dealers";
-import RightTable from "./RightTable";
 import LeftTable from "./LeftTable";
+import RightTable from "./RightTable";
 
-type Props = Required<Pick<TransferProps<Dealer>, "dataSource">>;
+type Props = Required<Pick<TransferProps<Dealer>, "dataSource">> & {
+  ignoredTerms: Set<string>;
+  onAddTerm: (term: string) => void;
+  onRemoveTerm: (term: string) => void;
+};
 
 function filterOption(value: string, option: Dealer) {
   return option.query.includes(value.toLowerCase());
 }
-export default function DealerTransfer({ dataSource }: Props) {
-  const [ignoredTerms, setIgnoredTerms] = useState(new Set<string>());
+export default function DealerTransfer({
+  dataSource,
+  ignoredTerms,
+  onAddTerm,
+  onRemoveTerm,
+}: Props) {
   const [targetKeys, setTargetKeys] = useState<string[]>([]);
 
   const handleChange: TransferProps<Dealer>["onChange"] = (
@@ -33,18 +41,6 @@ export default function DealerTransfer({ dataSource }: Props) {
 
     setTargetKeys(nextTargetKeys);
   };
-
-  const handleAddTerm = (term: string) =>
-    setIgnoredTerms((prev) => {
-      prev.add(term);
-      return new Set(prev);
-    });
-
-  const handleRemoveTerm = (term: string) =>
-    setIgnoredTerms((prev) => {
-      prev.delete(term);
-      return new Set(prev);
-    });
 
   return (
     <Transfer<Dealer>
@@ -69,8 +65,8 @@ export default function DealerTransfer({ dataSource }: Props) {
             filteredItems={filteredItems}
             ignoredTerms={ignoredTerms}
             selectedKeys={selectedKeys}
-            onAddTerm={handleAddTerm}
-            onRemoveTerm={handleRemoveTerm}
+            onAddTerm={onAddTerm}
+            onRemoveTerm={onRemoveTerm}
             onItemSelect={onItemSelect}
           />
         )

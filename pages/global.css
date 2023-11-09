@@ -3,5 +3,6 @@
 }
 
 .ant-transfer-list {
-  max-width: calc(50vw - 30px);
+  width: calc(50vw - 30px) !important;
+  max-width: 600px;
 }
