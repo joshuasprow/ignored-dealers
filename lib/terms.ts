@@ -1,4 +1,6 @@
-import { object, Output, picklist, string } from "valibot";
+import { object, Output, parse, picklist, string } from "valibot";
+import db from "./db";
+import sql from "./terms.sql";
 
 const TermKind = picklist([
   "dealer_name",
@@ -11,7 +13,17 @@ const Term = object({
   kind: TermKind,
   value: string(),
 });
+export type Term = Output<typeof Term>;
 
-export async function getTerms() {
-    
+export function getTerms() {
+  const rows = db.prepare(sql.getAll).all();
+  const terms: Term[] = [];
+
+  for (const row of rows) {
+    const term = parse(Term, row);
+
+    terms.push(term);
+  }
+
+  return terms;
 }
