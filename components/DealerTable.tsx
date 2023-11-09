@@ -20,17 +20,41 @@ export default function DealerTable({
   const columns: ColumnsType<Dealer> = [
     {
       title: "ID",
-      render: (_, dealer) => dealer.seller_id,
+      render: (_, dealer) => (
+        <span
+          style={{
+            color: ignoredTerms.has(dealer.seller_id) ? "red" : undefined,
+          }}
+        >
+          {dealer.seller_id}
+        </span>
+      ),
       width: "10ch",
     },
     {
       title: "Name",
-      render: (_, dealer) => dealer.name,
+      render: (_, dealer) => (
+        <span
+          style={{
+            color: ignoredTerms.has(dealer.name) ? "red" : undefined,
+          }}
+        >
+          {dealer.name}
+        </span>
+      ),
       width: "calc(30ch + 1rem)",
     },
     {
       title: "Phone",
-      render: (_, dealer) => dealer.phone_number,
+      render: (_, dealer) => (
+        <span
+          style={{
+            color: ignoredTerms.has(dealer.phone_number) ? "red" : undefined,
+          }}
+        >
+          {dealer.phone_number}
+        </span>
+      ),
       width: "20ch",
     },
   ];
