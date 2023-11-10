@@ -1,6 +1,4 @@
-import { object, Output, parse, picklist, string } from "valibot";
-import db from "./db";
-import sql from "./terms.sql";
+import { object, Output, picklist, string } from "valibot";
 
 const TermKind = picklist([
   "dealer_name",
@@ -17,32 +15,3 @@ export const Term = object({
 export type Term = Output<typeof Term>;
 
 export type Terms = Map<string, TermKind>;
-
-export function getTerms() {
-  const rows = db.prepare(sql.getAll).all();
-  const terms: Term[] = [];
-
-  for (const row of rows) {
-    const term = parse(Term, row);
-
-    terms.push(term);
-  }
-
-  return terms;
-}
-
-export function addTerms(terms: Term[]) {
-  const stmt = db.prepare(sql.insert);
-
-  for (const term of terms) {
-    stmt.run([term.kind, term.term]);
-  }
-}
-
-export function removeTerms(terms: Term[]) {
-  const stmt = db.prepare(sql.delete);
-
-  for (const term of terms) {
-    stmt.run([term.kind, term.term]);
-  }
-}

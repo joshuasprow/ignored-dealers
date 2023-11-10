@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { array, parse } from "valibot";
-import { addTerms, getTerms, removeTerms, Term } from "../../lib/terms";
+import { Term } from "../../lib/terms";
+import { addTerms, removeTerms } from "../../lib/terms.db";
+import { getTerms } from "../../lib/terms.db";
 
 // this is just silly...
 const routes = {

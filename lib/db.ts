@@ -1,6 +1,6 @@
 import Database from "better-sqlite3";
 import dealersSql from "./dealers.sql";
-import termsSql from "./terms.sql";
+import { sql as termsSql } from "./terms.db";
 
 const db = new Database(":memory:");
 
