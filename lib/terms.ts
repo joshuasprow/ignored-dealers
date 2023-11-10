@@ -4,6 +4,7 @@ import sql from "./terms.sql";
 
 const TermKind = picklist([
   "dealer_name",
+  "dealer_location",
   "dealer_seller_id",
   "dealer_phone_number",
 ]);

@@ -17,6 +17,7 @@ export type DealerGroup = {
   kind: "name";
   name: string;
   query: string;
+  locations: Set<string>;
   seller_ids: Set<string>;
   phone_numbers: Set<string>;
 };
@@ -35,6 +36,7 @@ function groupDealersByName(dealers: Dealer[]) {
         kind: "name",
         name: dealer.name,
         query: dealer.query,
+        locations: new Set([dealer.location]),
         seller_ids: new Set([dealer.seller_id]),
         phone_numbers: new Set([dealer.phone_number]),
       };
@@ -72,6 +74,21 @@ export default function DealerTable({
         />
       ),
       sorter: (a, b) => a.name.localeCompare(b.name),
+    },
+    {
+      dataIndex: "locations",
+      title: "Locations",
+      width: 128,
+      render: (_, group) =>
+        Array.from(group.locations).map((location) => (
+          <ColumnButton
+            key={location}
+            terms={terms}
+            term={{ kind: "dealer_location", term: location }}
+            onAddTerms={onAddTerms}
+            onRemoveTerms={onRemoveTerms}
+          />
+        )),
     },
     {
       dataIndex: "seller_ids",
