@@ -82,7 +82,7 @@ export default function DealerTable({
       columns={columns}
       dataSource={dealers}
       rowKey={(row) => row.query}
-      scroll={{ y: 400 }}
+      scroll={{ y: "calc(90dvh - 78px)" }}
       size="small"
       style={{ maxWidth: 600 }}
       pagination={{ pageSize: 50 }}
