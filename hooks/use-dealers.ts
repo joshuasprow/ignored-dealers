@@ -1,8 +1,37 @@
+import uFuzzy from "@leeoniya/ufuzzy";
 import { useEffect, useState } from "react";
 import { Dealer } from "../lib/dealers";
-import {} from "@leeoniya/ufuzzy"
+
+const uf = new uFuzzy();
 
 let dealers: Dealer[] = [];
+let queries: string[] = [];
+
+function filter(search: string) {
+  if (!search) {
+    return dealers;
+  }
+
+  if (dealers.length !== queries.length) {
+    throw new Error(
+      `dealers ${dealers.length} and queries ${queries.length} out of sync`,
+    );
+  }
+
+  const indices = uf.filter(queries, search);
+
+  if (!indices) {
+    return [];
+  }
+
+  const next: (typeof dealers)[number][] = [];
+
+  for (const index of indices) {
+    next.push(dealers[index]);
+  }
+
+  return next;
+}
 
 export default function useDealers() {
   const [filtered, setFiltered] = useState<Dealer[]>([]);
@@ -13,6 +42,7 @@ export default function useDealers() {
     const json = await res.json();
 
     dealers = json;
+    queries = dealers.map((d) => d.query);
 
     setFiltered(dealers);
   };
@@ -35,16 +65,9 @@ export default function useDealers() {
       setSearch(s);
 
       setFiltered(() => {
-        if (s) {
-          return dealers.filter((d) =>
-            d.query
-              .toLowerCase()
-              .replaceAll(" ", "")
-              .includes(s.toLowerCase().replaceAll(" ", "")),
-          );
-        }
+        if (!s) return dealers;
 
-        return dealers;
+        return filter(s);
       });
     },
   };
