@@ -1,5 +1,5 @@
 import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
-import { Button, Col, List, Row, Space, Table, Typography } from "antd";
+import { Button, Table, Typography } from "antd";
 import { ColumnsType } from "antd/es/table";
 import type { Term, TermKind } from "../lib/terms";
 
@@ -17,6 +17,7 @@ export default function TermsList({ terms, onSearch, onRemoveTerms }: Props) {
       dataIndex: "term",
       title: "Term",
       defaultSortOrder: "ascend",
+      width: "30ch",
       sorter: (a, b) => a.term.localeCompare(b.term),
     },
     {
@@ -33,6 +34,7 @@ export default function TermsList({ terms, onSearch, onRemoveTerms }: Props) {
     },
     {
       key: "search",
+      width: "5ch",
       render(_, term) {
         return (
           <Button
@@ -72,6 +74,7 @@ export default function TermsList({ terms, onSearch, onRemoveTerms }: Props) {
       columns={columns}
       size="small"
       pagination={false}
+      scroll={{ y: "90vh" }}
     />
   );
 }

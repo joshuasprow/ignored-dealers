@@ -49,27 +49,32 @@ export default function IndexPage() {
 
   const [activeKey, setActiveKey] = useState("all-terms");
 
+  const handleSearch = (s: string) => {
+    onSearch(s);
+    setActiveKey("dealer-terms");
+  };
+
   return (
     <Tabs
       animated
       activeKey={activeKey}
       tabPosition="left"
       onChange={setActiveKey}
-      tabBarStyle={{ width: "12ch" }}
+      tabBarStyle={{ width: "14ch" }}
       items={[
         {
-          label: `All (${terms.size})`,
+          label: `Ignored (${terms.size})`,
           key: "all-terms",
           children: (
             <TermsList
               terms={terms}
               onRemoveTerms={onRemoveTerms}
-              onSearch={onSearch}
+              onSearch={handleSearch}
             />
           ),
         },
         {
-          label: "Dealer",
+          label: "Dealers",
           key: "dealer-terms",
           children: (
             <DealerTerms
