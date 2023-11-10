@@ -1,14 +1,27 @@
 import { CloseOutlined } from "@ant-design/icons";
-import { Button, Input, Space } from "antd";
+import { Button, Input, Space, Switch } from "antd";
 
 type Props = {
   search: string;
+  showIgnored: boolean;
   onSearch: (search: string) => void;
+  onShowIgnored: (show: boolean) => void;
 };
 
-export default function DealerSearch({ search, onSearch }: Props) {
+export default function DealerSearch({
+  search,
+  showIgnored,
+  onSearch,
+  onShowIgnored,
+}: Props) {
   return (
     <Space>
+      <Switch
+        checked={showIgnored}
+        checkedChildren="ignored"
+        unCheckedChildren="all"
+        onChange={onShowIgnored}
+      />
       <Input
         placeholder="Filter Dealers"
         type="text"
