@@ -1,11 +1,8 @@
-import { Button, Table, type TableProps } from "antd";
-import { ColumnsType } from "antd/es/table";
-import { Dealer } from "../lib/dealers";
+import { Button } from "antd";
 import { Term, TermKind } from "../lib/terms";
-import RowCheckbox from "./RowCheckbox";
 
 type Props = {
-  ignoredTerms: Map<string, TermKind>;
+  terms: Map<string, TermKind>;
   term: Term;
   hasTitle?: boolean;
   onAddTerms: (terms: Term[]) => void;
@@ -13,13 +10,13 @@ type Props = {
 };
 
 export default function ColumnButton({
-  ignoredTerms,
+  terms,
   term,
   hasTitle,
   onAddTerms,
   onRemoveTerms,
 }: Props) {
-  const ignored = ignoredTerms.has(term.term);
+  const ignored = terms.has(term.term);
 
   return (
     <Button
