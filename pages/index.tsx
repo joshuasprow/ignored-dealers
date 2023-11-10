@@ -1,4 +1,4 @@
-import { Space, Switch } from "antd";
+import { Space } from "antd";
 import { useState } from "react";
 import DealerSearch from "../components/DealerSearch";
 import DealerTable from "../components/DealerTable";
@@ -13,7 +13,7 @@ export default function IndexPage() {
 
   const ignored = dealers.filter(
     (d) =>
-      terms.has(d.name) || terms.has(d.seller_id) || terms.has(d.phone_number),
+      terms.has(d.name) || terms.has(d.seller_id) || terms.has(d.phone_number)
   );
 
   return (

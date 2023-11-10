@@ -1,5 +1,5 @@
 import { CloseOutlined } from "@ant-design/icons";
-import { Button, Input, Space, Switch } from "antd";
+import { Button, Input, Switch } from "antd";
 
 type Props = {
   search: string;
@@ -15,25 +15,34 @@ export default function DealerSearch({
   onShowIgnored,
 }: Props) {
   return (
-    <Space>
+    <div
+      style={{
+        display: "flex",
+        gap: "0.5rem",
+        flexWrap: "nowrap",
+        alignItems: "center",
+        justifyContent: "space-between",
+      }}
+    >
       <Switch
         checked={showIgnored}
         checkedChildren="ignored"
         unCheckedChildren="all"
+        style={{ marginRight: "auto" }}
         onChange={onShowIgnored}
       />
       <Input
         placeholder="Filter Dealers"
+        style={{ marginLeft: "auto", width: "50ch" }}
         type="text"
-        onChange={(event) => onSearch(event.currentTarget.value)}
-        style={{ minWidth: "50ch" }}
         value={search}
+        onChange={(event) => onSearch(event.currentTarget.value)}
       />
       <Button
         disabled={!search}
         icon={<CloseOutlined />}
         onClick={() => onSearch("")}
       />
-    </Space>
+    </div>
   );
 }
