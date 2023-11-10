@@ -1,6 +1,6 @@
-import { Button, Tag } from "antd";
+import { Tag } from "antd";
+import useTerms from "../hooks/use-terms";
 import { Term, TermKind } from "../lib/terms";
-import { presetPrimaryColors } from "@ant-design/colors";
 
 const { CheckableTag } = Tag;
 
@@ -8,21 +8,24 @@ type Props = {
   terms: Map<string, TermKind>;
   term: Term;
   hasTitle?: boolean;
-  onAddTerms: (terms: Term[]) => void;
-  onRemoveTerms: (terms: Term[]) => void;
 };
 
-export default function DealerColumnButton({
-  terms,
-  term,
-  hasTitle,
-  onAddTerms,
-  onRemoveTerms,
-}: Props) {
+export default function DealerColumnButton({ terms, term }: Props) {
+  const { add, remove } = useTerms();
+
   const ignored = terms.has(term.term);
+
+  const handleClick = () => {
+    if (ignored) {
+      remove([term]);
+    } else {
+      add([term]);
+    }
+  };
 
   return (
     <CheckableTag
+      checked={ignored}
       style={{
         maxWidth: "18ch",
         overflow: "hidden",
@@ -31,8 +34,7 @@ export default function DealerColumnButton({
         textOverflow: "ellipsis",
         width: "100%",
       }}
-      checked={ignored}
-      onClick={() => (ignored ? onRemoveTerms([term]) : onAddTerms([term]))}
+      onClick={handleClick}
     >
       {term.term}
     </CheckableTag>

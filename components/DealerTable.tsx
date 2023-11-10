@@ -2,15 +2,13 @@ import { Table } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { PropsWithChildren } from "react";
 import { Dealer } from "../lib/dealers";
-import { Term, TermKind } from "../lib/terms";
+import { TermKind } from "../lib/terms";
 import ColumnButton from "./DealerColumnButton";
 import DealerGroupToggle from "./DealerGroupToggle";
 
 type Props = {
   dealers: Dealer[];
   terms: Map<string, TermKind>;
-  onAddTerms: (terms: Term[]) => void;
-  onRemoveTerms: (terms: Term[]) => void;
 };
 
 export type DealerGroup = {
@@ -52,12 +50,7 @@ function Cell(props: PropsWithChildren) {
   return <td style={{ verticalAlign: "top" }}>{props.children}</td>;
 }
 
-export default function DealerTable({
-  dealers,
-  terms,
-  onAddTerms,
-  onRemoveTerms,
-}: Props) {
+export default function DealerTable({ dealers, terms }: Props) {
   const groups = groupDealersByName(dealers);
 
   const columns: ColumnsType<DealerGroup> = [
@@ -65,14 +58,7 @@ export default function DealerTable({
       dataIndex: "name",
       title: "Name",
       width: "40ch",
-      render: (_, group) => (
-        <DealerGroupToggle
-          terms={terms}
-          group={group}
-          onAddTerms={onAddTerms}
-          onRemoveTerms={onRemoveTerms}
-        />
-      ),
+      render: (_, group) => <DealerGroupToggle terms={terms} group={group} />,
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
@@ -85,8 +71,6 @@ export default function DealerTable({
             key={location}
             terms={terms}
             term={{ kind: "dealer_location", term: location }}
-            onAddTerms={onAddTerms}
-            onRemoveTerms={onRemoveTerms}
           />
         )),
     },
@@ -100,8 +84,6 @@ export default function DealerTable({
             key={seller_id}
             terms={terms}
             term={{ kind: "dealer_seller_id", term: seller_id }}
-            onAddTerms={onAddTerms}
-            onRemoveTerms={onRemoveTerms}
           />
         )),
     },
@@ -116,8 +98,6 @@ export default function DealerTable({
             hasTitle
             terms={terms}
             term={{ kind: "dealer_phone_number", term: phone_number }}
-            onAddTerms={onAddTerms}
-            onRemoveTerms={onRemoveTerms}
           />
         )),
     },

@@ -5,10 +5,14 @@ import { addTerms, getTerms, removeTerms, Term } from "../../lib/terms";
 // this is just silly...
 const routes = {
   GET(req: NextApiRequest, res: NextApiResponse) {
+    console.log("terms:getting");
+
     res.json(getTerms());
   },
   POST(req: NextApiRequest, res: NextApiResponse) {
     const terms = parse(array(Term), JSON.parse(req.body));
+
+    console.log("terms:posting", terms);
 
     addTerms(terms);
 
@@ -16,6 +20,8 @@ const routes = {
   },
   DELETE(req: NextApiRequest, res: NextApiResponse) {
     const terms = parse(array(Term), JSON.parse(req.body));
+
+    console.log("terms:deleting", terms);
 
     removeTerms(terms);
 

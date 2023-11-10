@@ -26,8 +26,8 @@ export default function DealerSearch({
     >
       <Switch
         checked={showIgnored}
-        checkedChildren="ignored"
-        unCheckedChildren="all"
+        checkedChildren="Ignored"
+        unCheckedChildren="All"
         style={{ marginRight: "auto" }}
         onChange={onShowIgnored}
       />

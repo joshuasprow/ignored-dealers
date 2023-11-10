@@ -16,6 +16,8 @@ export const Term = object({
 });
 export type Term = Output<typeof Term>;
 
+export type Terms = Map<string, TermKind>;
+
 export function getTerms() {
   const rows = db.prepare(sql.getAll).all();
   const terms: Term[] = [];
