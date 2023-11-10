@@ -1,7 +1,7 @@
 import { Checkbox, Space, Typography } from "antd";
 import { CheckboxChangeEvent } from "antd/es/checkbox";
 import { Term, TermKind } from "../lib/terms";
-import { DealerGroup } from "./DealerTableNext";
+import { DealerGroup } from "./DealerTable";
 
 type Props = {
   group: DealerGroup;

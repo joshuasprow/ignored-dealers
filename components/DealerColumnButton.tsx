@@ -9,7 +9,7 @@ type Props = {
   onRemoveTerms: (terms: Term[]) => void;
 };
 
-export default function ColumnButton({
+export default function DealerColumnButton({
   terms,
   term,
   hasTitle,

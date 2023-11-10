@@ -1,86 +1,115 @@
-import { Table, type TableProps } from "antd";
+import { Table } from "antd";
 import { ColumnsType } from "antd/es/table";
+import { PropsWithChildren } from "react";
 import { Dealer } from "../lib/dealers";
 import { Term, TermKind } from "../lib/terms";
-import ColumnButton from "./ColumnButton";
-import RowCheckbox from "./RowCheckbox";
+import ColumnButton from "./DealerColumnButton";
+import DealerGroupToggle from "./DealerGroupToggle";
 
 type Props = {
-  dealers: TableProps<Dealer>["dataSource"];
-  ignoredTerms: Map<string, TermKind>;
+  dealers: Dealer[];
+  terms: Map<string, TermKind>;
   onAddTerms: (terms: Term[]) => void;
   onRemoveTerms: (terms: Term[]) => void;
 };
 
+export type DealerGroup = {
+  kind: "name";
+  name: string;
+  query: string;
+  seller_ids: Set<string>;
+  phone_numbers: Set<string>;
+};
+
+function groupDealersByName(dealers: Dealer[]) {
+  const groups = new Map<string, DealerGroup>();
+
+  for (const dealer of dealers) {
+    let group = groups.get(dealer.name);
+
+    if (group) {
+      group.seller_ids.add(dealer.seller_id);
+      group.phone_numbers.add(dealer.phone_number);
+    } else {
+      group = {
+        kind: "name",
+        name: dealer.name,
+        query: dealer.query,
+        seller_ids: new Set([dealer.seller_id]),
+        phone_numbers: new Set([dealer.phone_number]),
+      };
+    }
+
+    groups.set(dealer.name, group);
+  }
+
+  return Array.from(groups.values());
+}
+
+function Cell(props: PropsWithChildren) {
+  return <td style={{ verticalAlign: "top" }}>{props.children}</td>;
+}
+
 export default function DealerTable({
   dealers,
-  ignoredTerms,
+  terms,
   onAddTerms,
   onRemoveTerms,
 }: Props) {
-  const columns: ColumnsType<Dealer> = [
-    {
-      key: "checkbox",
-      render: (_, dealer) => {
-        return (
-          <RowCheckbox
-            dealer={dealer}
-            ignoredTerms={ignoredTerms}
-            onAddTerms={onAddTerms}
-            onRemoveTerms={onRemoveTerms}
-          />
-        );
-      },
-      width: 36,
-    },
-    {
-      dataIndex: "seller_id",
-      title: "ID",
-      render: (_, dealer) => (
-        <ColumnButton
-          ignoredTerms={ignoredTerms}
-          term={{ kind: "dealer_seller_id", term: dealer.seller_id }}
-          onAddTerms={onAddTerms}
-          onRemoveTerms={onRemoveTerms}
-        />
-      ),
-      sorter: (a, b) => a.seller_id.localeCompare(b.seller_id),
-      width: 64,
-    },
+  const groups = groupDealersByName(dealers);
+
+  const columns: ColumnsType<DealerGroup> = [
     {
       dataIndex: "name",
       title: "Name",
-      render: (_, dealer) => (
-        <ColumnButton
-          hasTitle
-          ignoredTerms={ignoredTerms}
-          term={{ kind: "dealer_name", term: dealer.name }}
+      width: "34ch",
+      render: (_, group) => (
+        <DealerGroupToggle
+          terms={terms}
+          group={group}
           onAddTerms={onAddTerms}
           onRemoveTerms={onRemoveTerms}
         />
       ),
       sorter: (a, b) => a.name.localeCompare(b.name),
-      width: "34ch",
     },
     {
-      dataIndex: "phone_number",
-      title: "Phone",
-      render: (_, dealer) => (
-        <ColumnButton
-          ignoredTerms={ignoredTerms}
-          term={{ kind: "dealer_phone_number", term: dealer.phone_number }}
-          onAddTerms={onAddTerms}
-          onRemoveTerms={onRemoveTerms}
-        />
-      ),
-      sorter: (a, b) => a.phone_number.localeCompare(b.phone_number),
+      dataIndex: "seller_ids",
+      title: "IDs",
+      width: 64,
+      render: (_, group) =>
+        Array.from(group.seller_ids).map((seller_id) => (
+          <ColumnButton
+            key={seller_id}
+            terms={terms}
+            term={{ kind: "dealer_seller_id", term: seller_id }}
+            onAddTerms={onAddTerms}
+            onRemoveTerms={onRemoveTerms}
+          />
+        )),
+    },
+
+    {
+      dataIndex: "phone_numbers",
+      title: "Phone #s",
+      render: (_, group) =>
+        Array.from(group.phone_numbers).map((phone_number) => (
+          <ColumnButton
+            key={phone_number}
+            terms={terms}
+            term={{ kind: "dealer_phone_number", term: phone_number }}
+            onAddTerms={onAddTerms}
+            onRemoveTerms={onRemoveTerms}
+          />
+        )),
     },
   ];
 
   return (
     <Table
       columns={columns}
-      dataSource={dealers}
+      components={{ body: { cell: Cell } }}
+      dataSource={groups}
       rowKey={(row) => row.query}
       scroll={{ y: "75dvh" }}
       size="small"
