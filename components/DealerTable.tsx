@@ -62,7 +62,7 @@ export default function DealerTable({
     {
       dataIndex: "name",
       title: "Name",
-      width: "34ch",
+      width: "40ch",
       render: (_, group) => (
         <DealerGroupToggle
           terms={terms}
@@ -88,14 +88,15 @@ export default function DealerTable({
           />
         )),
     },
-
     {
       dataIndex: "phone_numbers",
       title: "Phone #s",
+      width: "16ch",
       render: (_, group) =>
         Array.from(group.phone_numbers).map((phone_number) => (
           <ColumnButton
             key={phone_number}
+            hasTitle
             terms={terms}
             term={{ kind: "dealer_phone_number", term: phone_number }}
             onAddTerms={onAddTerms}
@@ -113,7 +114,7 @@ export default function DealerTable({
       rowKey={(row) => row.query}
       scroll={{ y: "75dvh" }}
       size="small"
-      style={{ maxWidth: 600 }}
+      style={{ maxWidth: 768 }}
       pagination={{ pageSize: 50 }}
     />
   );

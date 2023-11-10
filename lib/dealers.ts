@@ -4,13 +4,9 @@ import sql from "./dealers.sql";
 
 const Dealer = object({
   seller_id: string(),
-  seller_id__query: string(),
   name: string(),
-  name__query: string(),
   location: string(),
-  location__query: string(),
   phone_number: string(),
-  phone_number__query: string(),
   query: string(),
 });
 export type Dealer = Output<typeof Dealer>;

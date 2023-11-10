@@ -1,4 +1,4 @@
-import { Checkbox, Space, Typography } from "antd";
+import { Checkbox, Typography } from "antd";
 import { CheckboxChangeEvent } from "antd/es/checkbox";
 import { Term, TermKind } from "../lib/terms";
 import { DealerGroup } from "./DealerTable";
@@ -84,15 +84,13 @@ export default function RowCheckbox({
   };
 
   return (
-    <Space>
+    <div style={{ display: "flex", gap: "0.5rem", alignItems: "flex-start" }}>
       <Checkbox
         checked={checked}
         indeterminate={indeterminate}
         onChange={handleChange}
       />
-      <Typography.Text strong={terms.has(group.name)}>
-        {group.name}
-      </Typography.Text>
-    </Space>
+      <Typography.Text>{group.name}</Typography.Text>
+    </div>
   );
 }

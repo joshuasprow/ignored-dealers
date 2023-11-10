@@ -8,6 +8,7 @@
     "post-update": "yarn upgrade --latest"
   },
   "dependencies": {
+    "@ant-design/colors": "^7.0.0",
     "@ant-design/cssinjs": "1.17.2",
     "@ant-design/icons": "^5.2.6",
     "@leeoniya/ufuzzy": "^1.0.11",

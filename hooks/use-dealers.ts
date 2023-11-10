@@ -2,7 +2,7 @@ import uFuzzy from "@leeoniya/ufuzzy";
 import { useEffect, useState } from "react";
 import { Dealer } from "../lib/dealers";
 
-const uf = new uFuzzy();
+const uf = new uFuzzy({ intraIns: 1, intraChars: `[a-z\d'\-\.]` });
 
 let dealers: Dealer[] = [];
 let queries: string[] = [];

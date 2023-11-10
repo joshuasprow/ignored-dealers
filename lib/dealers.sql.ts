@@ -8,30 +8,19 @@ create table dealers (
 );`,
   getAll: `
 select seller_id,
-       seller_id__query,
-       name,
-       name__query,
-       location,
-       location__query,
+       "name",
+       "location",
        phone_number,
-       phone_number__query,
-        seller_id__query ||
-        name__query ||
-        location__query ||
-        phone_number__query as "query"
-from (select seller_id,
-             replace(lower(seller_id), ' ', '')      as seller_id__query,
-             "name",
-             replace(lower("name"), ' ', '')         as name__query,
-             "location",
-             replace(lower("location"), ' ', '')     as location__query,
-             phone_number,
-             replace(lower("phone_number"), ' ', '') as phone_number__query
-      from dealers
-      where seller_id is not null
-        and "name" is not null
-        and "location" is not null
-        and phone_number is not null);`,
+       seller_id || ' ' || 
+         "name" || ' ' || 
+         "location" || ' ' || 
+         phone_number as "query"
+from dealers
+where seller_id is not null
+  and "name" is not null
+  and "location" is not null
+  and phone_number is not null
+order by "name";`,
   init: `
 insert into dealers (seller_id, "name", "location", phone_number)
 values (null, '97 Auto Wrecking  Shull''s Towing', 'USA-WA(Brewster)', '1-800-822-5761'),

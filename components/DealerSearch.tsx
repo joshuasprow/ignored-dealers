@@ -1,4 +1,4 @@
-import { ClearOutlined } from "@ant-design/icons";
+import { CloseOutlined } from "@ant-design/icons";
 import { Button, Input, Space } from "antd";
 
 type Props = {
@@ -18,7 +18,7 @@ export default function DealerSearch({ search, onSearch }: Props) {
       />
       <Button
         disabled={!search}
-        icon={<ClearOutlined />}
+        icon={<CloseOutlined />}
         onClick={() => onSearch("")}
       />
     </Space>

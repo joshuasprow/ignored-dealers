@@ -1,5 +1,8 @@
-import { Button } from "antd";
+import { Button, Tag } from "antd";
 import { Term, TermKind } from "../lib/terms";
+import { presetPrimaryColors } from "@ant-design/colors";
+
+const { CheckableTag } = Tag;
 
 type Props = {
   terms: Map<string, TermKind>;
@@ -19,23 +22,19 @@ export default function DealerColumnButton({
   const ignored = terms.has(term.term);
 
   return (
-    <Button
-      size="small"
-      style={{ width: "100%" }}
-      title={hasTitle ? term.term : undefined}
-      type={ignored ? "primary" : undefined}
+    <CheckableTag
+      style={{
+        maxWidth: "18ch",
+        overflow: "hidden",
+        whiteSpace: "nowrap",
+        textAlign: "center",
+        textOverflow: "ellipsis",
+        width: "100%",
+      }}
+      checked={ignored}
       onClick={() => (ignored ? onRemoveTerms([term]) : onAddTerms([term]))}
     >
-      <span
-        style={{
-          maxWidth: "30ch",
-          overflow: "hidden",
-          whiteSpace: "nowrap",
-          textOverflow: "ellipsis",
-        }}
-      >
-        {term.term}
-      </span>
-    </Button>
+      {term.term}
+    </CheckableTag>
   );
 }
