@@ -8,10 +8,10 @@ const { Text } = Typography;
 type Props = {
   terms: Map<string, TermKind>;
   onSearch: (search: string) => void;
-  onRemove: (term: Term) => void;
+  onRemoveTerms: (terms: Term[]) => void;
 };
 
-function TermsTable({ terms, onSearch, onRemove }: Props) {
+export default function TermsList({ terms, onSearch, onRemoveTerms }: Props) {
   const columns: ColumnsType<Term> = [
     {
       dataIndex: "term",
@@ -55,7 +55,7 @@ function TermsTable({ terms, onSearch, onRemove }: Props) {
             danger
             icon={<DeleteOutlined />}
             onClick={() => {
-              onRemove(term);
+              onRemoveTerms([term]);
             }}
           />
         );
@@ -73,43 +73,5 @@ function TermsTable({ terms, onSearch, onRemove }: Props) {
       size="small"
       pagination={false}
     />
-  );
-}
-export default function TermsList({ terms, onSearch, onRemove }: Props) {
-  if (true)
-    return <TermsTable terms={terms} onSearch={onSearch} onRemove={onRemove} />;
-  return (
-    <List>
-      {Array.from(terms.entries()).map(([term, kind]) => (
-        <List.Item
-          key={term}
-          actions={[
-            <Button
-              size="small"
-              type="primary"
-              icon={<SearchOutlined />}
-              onClick={() => {
-                onSearch(term);
-              }}
-            />,
-            <Button
-              size="small"
-              danger
-              icon={<DeleteOutlined />}
-              onClick={() => {
-                onRemove({ term: term, kind });
-              }}
-            />,
-          ]}
-        >
-          <div style={{ width: "100%" }}>
-            <Text type="secondary" style={{ float: "right" }}>
-              {kind.replaceAll("dealer_", "")}
-            </Text>
-            <Text>{term}</Text>
-          </div>
-        </List.Item>
-      ))}
-    </List>
   );
 }

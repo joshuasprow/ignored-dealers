@@ -1,12 +1,10 @@
-import { ClearOutlined, UnorderedListOutlined } from "@ant-design/icons";
-import { Badge, Button, Input, Modal, Space, Tabs, Typography } from "antd";
+import { ClearOutlined } from "@ant-design/icons";
+import { Button, Input, Space, Tabs } from "antd";
 import { useState } from "react";
 import DealerTable from "../components/DealerTable";
 import TermsList from "../components/TermsList";
 import useDealers from "../hooks/use-dealers";
 import useTerms from "../hooks/use-terms";
-
-const { Text } = Typography;
 
 type Props = ReturnType<typeof useDealers> & ReturnType<typeof useTerms> & {};
 
@@ -33,15 +31,6 @@ function DealerTerms({
           icon={<ClearOutlined />}
           onClick={() => onSearch("")}
         />
-        <Badge color="blue" count={terms.size}>
-          <Button
-            disabled={!terms.size}
-            icon={<UnorderedListOutlined />}
-            onClick={() => {
-              throw new Error("not implemented");
-            }}
-          />
-        </Badge>
       </Space>
 
       <DealerTable
@@ -58,46 +47,42 @@ export default function IndexPage() {
   const { dealers, search, onSearch } = useDealers();
   const { terms, onAddTerms, onRemoveTerms } = useTerms();
 
-  const [termsOpen, setTermsOpen] = useState(false);
+  const [activeKey, setActiveKey] = useState("all-terms");
 
   return (
-    <>
-      <Tabs
-        activeKey="dealer-terms"
-        tabPosition="left"
-        items={[
-          {
-            label: "Dealer",
-            key: "dealer-terms",
-            children: (
-              <DealerTerms
-                dealers={dealers}
-                search={search}
-                terms={terms}
-                onSearch={onSearch}
-                onAddTerms={onAddTerms}
-                onRemoveTerms={onRemoveTerms}
-              />
-            ),
-          },
-        ]}
-      />
-
-      <Modal
-        footer={false}
-        open={termsOpen}
-        onCancel={() => setTermsOpen(false)}
-        title="All Ignored Terms"
-      >
-        <TermsList
-          terms={terms}
-          onSearch={(search) => {
-            onSearch(search);
-            setTermsOpen(false);
-          }}
-          onRemove={(term) => onRemoveTerms([term])}
-        />
-      </Modal>
-    </>
+    <Tabs
+      animated
+      activeKey={activeKey}
+      tabPosition="left"
+      onChange={setActiveKey}
+      tabBarStyle={{ width: "12ch" }}
+      items={[
+        {
+          label: `All (${terms.size})`,
+          key: "all-terms",
+          children: (
+            <TermsList
+              terms={terms}
+              onRemoveTerms={onRemoveTerms}
+              onSearch={onSearch}
+            />
+          ),
+        },
+        {
+          label: "Dealer",
+          key: "dealer-terms",
+          children: (
+            <DealerTerms
+              dealers={dealers}
+              search={search}
+              terms={terms}
+              onSearch={onSearch}
+              onAddTerms={onAddTerms}
+              onRemoveTerms={onRemoveTerms}
+            />
+          ),
+        },
+      ]}
+    />
   );
 }
