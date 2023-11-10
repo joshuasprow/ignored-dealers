@@ -21,6 +21,7 @@ export default function ColumnButton({
   return (
     <Button
       size="small"
+      style={{ width: "100%" }}
       title={hasTitle ? term.term : undefined}
       type={ignored ? "primary" : undefined}
       onClick={() => (ignored ? onRemoveTerms([term]) : onAddTerms([term]))}

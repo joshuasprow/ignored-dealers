@@ -1,8 +1,11 @@
 import { Table } from "antd";
 import { ColumnsType } from "antd/es/table";
+import { CustomizeComponent } from "rc-table/lib/interface";
+import { ComponentProps, PropsWithChildren } from "react";
 import { Dealer } from "../lib/dealers";
 import { Term, TermKind } from "../lib/terms";
 import ColumnButton from "./ColumnButton";
+import DealerGroupToggle from "./DealerGroupToggle";
 
 type Props = {
   dealers: Dealer[];
@@ -11,7 +14,7 @@ type Props = {
   onRemoveTerms: (terms: Term[]) => void;
 };
 
-type DealerGroup = {
+export type DealerGroup = {
   kind: "name";
   name: string;
   query: string;
@@ -44,6 +47,10 @@ function groupDealersByName(dealers: Dealer[]) {
   return Array.from(groups.values());
 }
 
+function Cell(props: PropsWithChildren) {
+  return <td style={{ verticalAlign: "top" }}>{props.children}</td>;
+}
+
 export default function DealerTableNext({
   dealers,
   terms,
@@ -56,23 +63,23 @@ export default function DealerTableNext({
     {
       dataIndex: "name",
       title: "Name",
-      render: (_, dealer) => (
-        <ColumnButton
-          hasTitle
+      width: "34ch",
+      render: (_, group) => (
+        <DealerGroupToggle
           terms={terms}
-          term={{ kind: "dealer_name", term: dealer.name }}
+          group={group}
           onAddTerms={onAddTerms}
           onRemoveTerms={onRemoveTerms}
         />
       ),
       sorter: (a, b) => a.name.localeCompare(b.name),
-      width: "34ch",
     },
     {
       dataIndex: "seller_ids",
       title: "IDs",
-      render: (_, dealer) =>
-        Array.from(dealer.seller_ids).map((seller_id) => (
+      width: 64,
+      render: (_, group) =>
+        Array.from(group.seller_ids).map((seller_id) => (
           <ColumnButton
             key={seller_id}
             terms={terms}
@@ -81,14 +88,13 @@ export default function DealerTableNext({
             onRemoveTerms={onRemoveTerms}
           />
         )),
-      width: 64,
     },
 
     {
       dataIndex: "phone_numbers",
       title: "Phone #s",
-      render: (_, dealer) =>
-        Array.from(dealer.phone_numbers).map((phone_number) => (
+      render: (_, group) =>
+        Array.from(group.phone_numbers).map((phone_number) => (
           <ColumnButton
             key={phone_number}
             terms={terms}
@@ -103,6 +109,7 @@ export default function DealerTableNext({
   return (
     <Table
       columns={columns}
+      components={{ body: { cell: Cell } }}
       dataSource={groups}
       rowKey={(row) => row.query}
       scroll={{ y: "75dvh" }}
