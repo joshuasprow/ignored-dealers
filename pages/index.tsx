@@ -24,7 +24,11 @@ export default function IndexPage() {
         onSearch={onSearch}
         onShowIgnored={setShowIgnored}
       />
-      <DealerTable dealers={showIgnored ? ignored : dealers} terms={terms} />
+      <DealerTable
+        dealers={showIgnored ? ignored : dealers}
+        showIgnored={showIgnored}
+        terms={terms}
+      />
     </Space>
   );
 }

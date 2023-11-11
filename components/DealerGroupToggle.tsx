@@ -5,6 +5,7 @@ import { DealerGroup } from "./DealerTable";
 
 type Props = {
   group: DealerGroup;
+  showIgnored: boolean;
   terms: Map<string, TermKind>;
 };
 
@@ -71,12 +72,13 @@ function getCheckboxState(terms: Props["terms"], dealer: Props["group"]) {
   };
 }
 
-export default function RowCheckbox({ terms, group }: Props) {
+export default function RowCheckbox({ group, showIgnored, terms }: Props) {
   const { add, remove, loading } = useTerms();
 
   const { checked, indeterminate } = getCheckboxState(terms, group);
 
   const all = combineGroupTerms(group);
+  const disabled = loading || (showIgnored && checked);
 
   const handleChange = () => {
     if (checked) {
@@ -89,7 +91,7 @@ export default function RowCheckbox({ terms, group }: Props) {
   return (
     <div style={{ display: "flex", gap: "0.5rem", alignItems: "flex-start" }}>
       <Checkbox
-        disabled={loading}
+        disabled={disabled}
         checked={checked}
         indeterminate={indeterminate}
         onChange={handleChange}

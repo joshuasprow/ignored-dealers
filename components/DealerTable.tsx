@@ -3,11 +3,12 @@ import { ColumnsType } from "antd/es/table";
 import { PropsWithChildren } from "react";
 import { Dealer } from "../lib/dealers";
 import { TermKind } from "../lib/terms";
-import DealerTermToggle from "./DealerTermToggle";
 import DealerGroupToggle from "./DealerGroupToggle";
+import DealerTermToggle from "./DealerTermToggle";
 
 type Props = {
   dealers: Dealer[];
+  showIgnored: boolean;
   terms: Map<string, TermKind>;
 };
 
@@ -46,11 +47,15 @@ function groupDealersByName(dealers: Dealer[]) {
   return Array.from(groups.values());
 }
 
-function Cell(props: PropsWithChildren) {
-  return <td style={{ verticalAlign: "top" }}>{props.children}</td>;
+function Cell(props: PropsWithChildren & { className?: string }) {
+  return (
+    <td className={props.className} style={{ verticalAlign: "top" }}>
+      {props.children}
+    </td>
+  );
 }
 
-export default function DealerTable({ dealers, terms }: Props) {
+export default function DealerTable({ dealers, showIgnored, terms }: Props) {
   const groups = groupDealersByName(dealers);
 
   const columns: ColumnsType<DealerGroup> = [
@@ -58,7 +63,13 @@ export default function DealerTable({ dealers, terms }: Props) {
       dataIndex: "name",
       title: "Name",
       width: "40ch",
-      render: (_, group) => <DealerGroupToggle terms={terms} group={group} />,
+      render: (_, group) => (
+        <DealerGroupToggle
+          group={group}
+          showIgnored={showIgnored}
+          terms={terms}
+        />
+      ),
       sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
@@ -88,28 +99,40 @@ export default function DealerTable({ dealers, terms }: Props) {
       dataIndex: "seller_ids",
       title: "IDs",
       width: 64,
-      render: (_, group) =>
-        Array.from(group.seller_ids).map((seller_id) => (
-          <DealerTermToggle
-            key={seller_id}
-            terms={terms}
-            term={{ kind: "dealer_seller_id", term: seller_id }}
-          />
-        )),
+      render: (_, group) => (
+        <div
+          style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}
+        >
+          {Array.from(group.seller_ids).map((seller_id) => (
+            <DealerTermToggle
+              key={seller_id}
+              showIgnored={showIgnored}
+              terms={terms}
+              term={{ kind: "dealer_seller_id", term: seller_id }}
+            />
+          ))}
+        </div>
+      ),
     },
     {
       dataIndex: "phone_numbers",
       title: "Phone #s",
       width: "16ch",
-      render: (_, group) =>
-        Array.from(group.phone_numbers).map((phone_number) => (
-          <DealerTermToggle
-            key={phone_number}
-            hasTitle
-            terms={terms}
-            term={{ kind: "dealer_phone_number", term: phone_number }}
-          />
-        )),
+      render: (_, group) => (
+        <div
+          style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}
+        >
+          {Array.from(group.phone_numbers).map((phone_number) => (
+            <DealerTermToggle
+              key={phone_number}
+              hasTitle
+              showIgnored={showIgnored}
+              terms={terms}
+              term={{ kind: "dealer_phone_number", term: phone_number }}
+            />
+          ))}
+        </div>
+      ),
     },
   ];
 
@@ -119,7 +142,7 @@ export default function DealerTable({ dealers, terms }: Props) {
       components={{ body: { cell: Cell } }}
       dataSource={groups}
       rowKey={(row) => row.query}
-      scroll={{ y: "75dvh" }}
+      scroll={{ y: "75vh" }}
       size="small"
       style={{ maxWidth: 768 }}
       pagination={{ pageSize: 50 }}
