@@ -1,16 +1,10 @@
 import Database from "better-sqlite3";
-import dealersSql from "./dealers.sql";
-import { sql as termsSql } from "./terms.db";
+// import { init as dealers } from "./dealers.db";
+// import { init as terms } from "./terms.db";
 
-const db = new Database(":memory:");
+const db = new Database("tmp/sqlite.db");
 
-try {
-  db.prepare(dealersSql.create).run();
-  db.prepare(dealersSql.init).run();
-  db.prepare(termsSql.create).run();
-  db.prepare(termsSql.init).run();
-} catch (error) {
-  console.error(error);
-}
+// dealers(db);
+// terms(db);
 
 export default db;

@@ -1,8 +1,8 @@
+import { Database } from "better-sqlite3";
 import { parse } from "valibot";
-import db from "./db";
 import { Term } from "./terms";
 
-export const sql = {
+const sql = {
   create: `
 create table ignored_terms
 (
@@ -28,7 +28,12 @@ values ('dealer_seller_id', '1023'),
        ('dealer_name', 'All Import Auto Parts');`,
 } as const;
 
-export function getTerms() {
+export function init(db: Database) {
+  db.prepare(sql.create).run();
+  db.prepare(sql.init).run();
+}
+
+export function getTerms(db: Database) {
   const rows = db.prepare(sql.getAll).all();
   const terms: Term[] = [];
 
@@ -40,7 +45,8 @@ export function getTerms() {
 
   return terms;
 }
-export function addTerms(terms: Term[]) {
+
+export function addTerms(db: Database, terms: Term[]) {
   const stmt = db.prepare(sql.insert);
 
   for (const term of terms) {
@@ -48,7 +54,7 @@ export function addTerms(terms: Term[]) {
   }
 }
 
-export function removeTerms(terms: Term[]) {
+export function removeTerms(db: Database, terms: Term[]) {
   const stmt = db.prepare(sql.delete);
 
   for (const term of terms) {
