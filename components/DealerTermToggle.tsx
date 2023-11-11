@@ -10,7 +10,7 @@ type Props = {
   hasTitle?: boolean;
 };
 
-export default function DealerColumnButton({ terms, term }: Props) {
+export default function DealerTermToggle({ terms, term }: Props) {
   const { add, remove } = useTerms();
 
   const ignored = terms.has(term.term);

@@ -1,9 +1,9 @@
-import { Table } from "antd";
+import { Table, Tag } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { PropsWithChildren } from "react";
 import { Dealer } from "../lib/dealers";
 import { TermKind } from "../lib/terms";
-import ColumnButton from "./DealerColumnButton";
+import DealerTermToggle from "./DealerTermToggle";
 import DealerGroupToggle from "./DealerGroupToggle";
 
 type Props = {
@@ -67,11 +67,21 @@ export default function DealerTable({ dealers, terms }: Props) {
       width: 128,
       render: (_, group) =>
         Array.from(group.locations).map((location) => (
-          <ColumnButton
+          <Tag
             key={location}
-            terms={terms}
-            term={{ kind: "dealer_location", term: location }}
-          />
+            bordered={false}
+            style={{
+              maxWidth: "18ch",
+              overflow: "hidden",
+              whiteSpace: "nowrap",
+              textAlign: "center",
+              textOverflow: "ellipsis",
+              width: "100%",
+            }}
+            title={location}
+          >
+            {location}
+          </Tag>
         )),
     },
     {
@@ -80,7 +90,7 @@ export default function DealerTable({ dealers, terms }: Props) {
       width: 64,
       render: (_, group) =>
         Array.from(group.seller_ids).map((seller_id) => (
-          <ColumnButton
+          <DealerTermToggle
             key={seller_id}
             terms={terms}
             term={{ kind: "dealer_seller_id", term: seller_id }}
@@ -93,7 +103,7 @@ export default function DealerTable({ dealers, terms }: Props) {
       width: "16ch",
       render: (_, group) =>
         Array.from(group.phone_numbers).map((phone_number) => (
-          <ColumnButton
+          <DealerTermToggle
             key={phone_number}
             hasTitle
             terms={terms}

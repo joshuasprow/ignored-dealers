@@ -31,7 +31,7 @@ function filter(dealers: Dealer[], queries: string[], search: string) {
   return next;
 }
 
-async function queryFn() {
+async function getDealers() {
   try {
     const res = await fetch("api/dealers");
     const json = await res.json();
@@ -47,7 +47,7 @@ async function queryFn() {
 export default function useDealers() {
   const { data: dealers } = useQuery<Dealer[]>({
     initialData: [],
-    queryFn,
+    queryFn: getDealers,
     queryKey: ["dealers"],
   });
 
@@ -57,7 +57,6 @@ export default function useDealers() {
   const queries = useMemo(() => dealers.map((d) => d.query), [dealers]);
 
   useEffect(() => {
-    console.log("rerendering");
     setFiltered(() => {
       if (!search) return dealers;
 
