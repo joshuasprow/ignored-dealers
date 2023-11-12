@@ -2,6 +2,7 @@ import { Database } from "better-sqlite3";
 import { parse } from "valibot";
 import { Dealer } from "./dealers";
 import dealersJson from "./dealers.json";
+import { renderQueryValues } from "./db";
 
 const sql = {
   create: `
@@ -25,20 +26,8 @@ where seller_id is not null
 order by "name";`,
   init: `
 insert into dealers (seller_id, "name", "location", phone_number)
-values ${dealersJson
-    .map(
-      (d) =>
-        `('${escape(d.seller_id)}', ` +
-        `'${escape(d.name)}', ` +
-        `'${escape(d.location)}', ` +
-        `'${escape(d.phone_number)}')`
-    )
-    .join(",\n")}`,
+values ${renderQueryValues(dealersJson)}`,
 } as const;
-
-function escape(str: string) {
-  return str.replace(/'/g, "''");
-}
 
 export function init(db: Database) {
   db.prepare(sql.create).run();
