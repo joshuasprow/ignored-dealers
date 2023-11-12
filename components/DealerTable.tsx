@@ -1,10 +1,18 @@
-import { Table, Tag } from "antd";
+import { Badge, Button, Modal, Space, Table, Tag } from "antd";
 import { ColumnsType } from "antd/es/table";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useState } from "react";
+import useDealerPrices from "../hooks/use-dealer-prices";
 import { Dealer } from "../lib/dealers";
 import { TermKind } from "../lib/terms";
 import DealerGroupToggle from "./DealerGroupToggle";
 import DealerTermToggle from "./DealerTermToggle";
+import {
+  DollarCircleFilled,
+  DollarCircleOutlined,
+  DollarOutlined,
+  ExportOutlined,
+} from "@ant-design/icons";
+import { presetPrimaryColors } from "@ant-design/colors";
 
 type Props = {
   dealers: Dealer[];
@@ -52,6 +60,33 @@ function Cell(props: PropsWithChildren & { className?: string }) {
     <td className={props.className} style={{ verticalAlign: "top" }}>
       {props.children}
     </td>
+  );
+}
+
+function DealerPrices({ group }: { group: DealerGroup }) {
+  const prices = useDealerPrices(group.query);
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <Space.Compact>
+        <Button
+          icon={<ExportOutlined />}
+          onClick={() => setOpen(true)}
+          size="small"
+        />
+        <Tag>{prices.length}</Tag>
+      </Space.Compact>
+
+      <Modal
+        destroyOnClose
+        footer={false}
+        open={open}
+        onCancel={() => setOpen(false)}
+      >
+        {prices.map((p) => p.dealer_query).join(", ")}
+      </Modal>
+    </>
   );
 }
 
@@ -133,6 +168,14 @@ export default function DealerTable({ dealers, showIgnored, terms }: Props) {
           ))}
         </div>
       ),
+    },
+    {
+      key: "prices",
+      title: "Prices",
+      width: "6ch",
+      render: (_, group) => {
+        return <DealerPrices group={group} />;
+      },
     },
   ];
 
