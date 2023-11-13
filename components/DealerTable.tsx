@@ -138,7 +138,7 @@ export default function DealerTable({ dealers, showIgnored, terms }: Props) {
     {
       key: "prices",
       title: "Prices",
-      width: "6ch",
+      width: "8ch",
       render: (_, group) => {
         return <DealerPrices group={group} />;
       },
@@ -153,7 +153,7 @@ export default function DealerTable({ dealers, showIgnored, terms }: Props) {
       rowKey={(row) => row.query}
       scroll={{ y: "75vh" }}
       size="small"
-      style={{ maxWidth: 768 }}
+      style={{ maxWidth: 800 }}
       pagination={{ pageSize: 50 }}
     />
   );

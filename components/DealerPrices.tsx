@@ -15,15 +15,18 @@ export default function DealerPrices({ group }: { group: DealerGroup }) {
 
   return (
     <>
-      <Space.Compact>
-        <Button
-          disabled={!prices?.length}
-          icon={<ExportOutlined />}
-          onClick={() => setOpen(true)}
-          size="small"
-        />
-        <Tag>{prices?.length || 0}</Tag>
-      </Space.Compact>
+      <Button
+        disabled={!prices?.length}
+        size="small"
+        style={{ width: "100%" }}
+        type="primary"
+        onClick={() => setOpen(true)}
+      >
+        <Space>
+          <ExportOutlined />
+          <span>{prices?.length || 0}</span>
+        </Space>
+      </Button>
 
       <Modal
         destroyOnClose
