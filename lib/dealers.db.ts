@@ -5,6 +5,7 @@ import dealersJson from "./dealers.json";
 import { renderQueryValues } from "./db";
 
 const sql = {
+  drop: `drop table if exists dealers;`,
   create: `
 create table dealers (
     seller_id    text,
@@ -26,12 +27,18 @@ where seller_id is not null
 order by "name";`,
   init: `
 insert into dealers (seller_id, "name", "location", phone_number)
-values ${renderQueryValues(dealersJson)}`,
+values (:seller_id, :name, :location, :phone_number)`,
 } as const;
 
 export function init(db: Database) {
+  db.prepare(sql.drop).run();
   db.prepare(sql.create).run();
-  db.prepare(sql.init).run();
+
+  const stmt = db.prepare(sql.init);
+
+  for (const dealer of dealersJson) {
+    stmt.run(dealer);
+  }
 }
 
 export function getDealers(db: Database) {

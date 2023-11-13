@@ -1,13 +1,13 @@
 import Database from "better-sqlite3";
-// import { init as dealers } from "./dealers.db";
-// import { init as prices } from "./prices.db";
-// import { init as terms } from "./terms.db";
+import { init as dealers } from "./dealers.db";
+import { init as prices } from "./prices.db";
+import { init as terms } from "./terms.db";
 
 const db = new Database("tmp/sqlite.db");
 
-// dealers(db);
-// prices(db);
-// terms(db);
+dealers(db);
+prices(db);
+terms(db);
 
 function escapeString(str: string) {
   return str.replace(/'/g, "''");

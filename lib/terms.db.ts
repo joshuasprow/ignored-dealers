@@ -3,6 +3,7 @@ import { parse } from "valibot";
 import { Term } from "./terms";
 
 const sql = {
+  drop: `drop table if exists ignored_terms;`,
   create: `
 create table ignored_terms
 (
@@ -29,6 +30,7 @@ values ('dealer_seller_id', '1023'),
 } as const;
 
 export function init(db: Database) {
+  db.prepare(sql.drop).run();
   db.prepare(sql.create).run();
   db.prepare(sql.init).run();
 }

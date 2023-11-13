@@ -1,34 +1,39 @@
 import { Database } from "better-sqlite3";
-import { parse } from "valibot";
+import { parse, ValiError } from "valibot";
 import { Price } from "./prices";
 import pricesJson from "./prices.json";
 import { renderQueryValues } from "./db";
 
 const sql = {
+  drop: `drop table if exists prices;`,
   create: `
 create table prices (
+    searched_at integer not null,
     part_code text not null,
     ic text not null,
     grade text not null,
-    make_name text not null,
-    model_name text not null,
-    year text not null,
+    price float,
     stock_number text,
-    distance integer not null,
+    car_part_part text,
+    car_part_model text not null,
+    car_part_year text,
+    distance integer,
     dealer_name text not null,
     dealer_seller_id text not null,
     dealer_location text not null,
     dealer_phone_number text not null
 );`,
   getAll: `
-select part_code,
+select searched_at,
+       part_code,
        ic,
        grade,
-       make_name,
-       model_name,
-       year,
        stock_number,
        distance,
+       price,
+       car_part_part,
+       car_part_model,
+       car_part_year,
        dealer_name,
        dealer_seller_id,
        dealer_location,
@@ -36,24 +41,45 @@ select part_code,
        dealer_seller_id || ' ' || dealer_name || ' ' || dealer_location || ' ' || dealer_phone_number as dealer_query
 from prices;`,
   init: `
-insert into prices (part_code, 
+insert into prices (searched_at,
+                    part_code,
                     ic,
                     grade,
-                    make_name,
-                    model_name,
-                    year,
                     stock_number,
                     distance,
+                    price,
+                    car_part_part,
+                    car_part_model,
+                    car_part_year,
                     dealer_name,
                     dealer_seller_id,
                     dealer_location,
                     dealer_phone_number)
-values ${renderQueryValues(pricesJson)}`,
+values (:searched_at,
+        :part_code,
+        :ic,
+        :grade,
+        :stock_number,
+        :distance,
+        :price,
+        :car_part_part,
+        :car_part_model,
+        :car_part_year,
+        :dealer_name,
+        :dealer_seller_id,
+        :dealer_location,
+        :dealer_phone_number)`,
 } as const;
 
 export function init(db: Database) {
+  db.prepare(sql.drop).run();
   db.prepare(sql.create).run();
-  db.prepare(sql.init).run();
+
+  const stmt = db.prepare(sql.init);
+
+  for (const price of pricesJson) {
+    stmt.run(price);
+  }
 }
 
 export function getPrices(db: Database) {
@@ -61,9 +87,9 @@ export function getPrices(db: Database) {
   const prices: Price[] = [];
 
   for (const row of rows) {
-    const dealer = parse(Price, row);
+    const price = parse(Price, row);
 
-    prices.push(dealer);
+    prices.push(price);
   }
 
   return prices;

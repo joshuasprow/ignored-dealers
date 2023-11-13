@@ -22,11 +22,11 @@ async function getPrices() {
 }
 
 export default function usePrices() {
-  const get = useQuery<Prices>({
+  const { data } = useQuery<Prices>({
     initialData: new Map(),
     queryFn: getPrices,
     queryKey: [QUERY_KEY],
   });
 
-  return get.data;
+  return data;
 }

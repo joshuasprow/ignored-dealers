@@ -1,18 +1,12 @@
-import { Badge, Button, Modal, Space, Table, Tag } from "antd";
+import { ExportOutlined } from "@ant-design/icons";
+import { Button, Col, Descriptions, Modal, Row, Space, Table, Tag } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { PropsWithChildren, useState } from "react";
-import useDealerPrices from "../hooks/use-dealer-prices";
+import usePrices from "../hooks/use-prices";
 import { Dealer } from "../lib/dealers";
 import { TermKind } from "../lib/terms";
 import DealerGroupToggle from "./DealerGroupToggle";
 import DealerTermToggle from "./DealerTermToggle";
-import {
-  DollarCircleFilled,
-  DollarCircleOutlined,
-  DollarOutlined,
-  ExportOutlined,
-} from "@ant-design/icons";
-import { presetPrimaryColors } from "@ant-design/colors";
 
 type Props = {
   dealers: Dealer[];
@@ -63,19 +57,25 @@ function Cell(props: PropsWithChildren & { className?: string }) {
   );
 }
 
+const dateFormatter = new Intl.DateTimeFormat("en-US", {
+  dateStyle: "short",
+});
+
 function DealerPrices({ group }: { group: DealerGroup }) {
-  const prices = useDealerPrices(group.query);
+  const prices = usePrices().get(group.query);
+
   const [open, setOpen] = useState(false);
 
   return (
     <>
       <Space.Compact>
         <Button
+          disabled={!prices?.length}
           icon={<ExportOutlined />}
           onClick={() => setOpen(true)}
           size="small"
         />
-        <Tag>{prices.length}</Tag>
+        <Tag>{prices?.length || 0}</Tag>
       </Space.Compact>
 
       <Modal
@@ -84,7 +84,16 @@ function DealerPrices({ group }: { group: DealerGroup }) {
         open={open}
         onCancel={() => setOpen(false)}
       >
-        {prices.map((p) => p.dealer_query).join(", ")}
+        {prices?.map((p, i) => (
+          <Row key={`${p.dealer_query}-${i}`} gutter={[12, 12]}>
+            <Col>{dateFormatter.format(new Date(p.searched_at))}</Col>
+            <Col>{p.part_code}</Col>
+            <Col>{p.ic}</Col>
+            <Col>{p.grade}</Col>
+            <Col>{p.stock_number}</Col>
+            <Col>{p.price}</Col>
+          </Row>
+        ))}
       </Modal>
     </>
   );
