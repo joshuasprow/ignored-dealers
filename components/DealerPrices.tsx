@@ -1,16 +1,46 @@
+import { purple } from "@ant-design/colors";
 import { ExportOutlined } from "@ant-design/icons";
-import { Button, Col, Modal, Row, Space, Tag } from "antd";
+import { Button, Modal, Space, Table } from "antd";
+import { ColumnsType } from "antd/es/table";
 import { useState } from "react";
 import usePrices from "../hooks/use-prices";
+import { Price } from "../lib/prices";
 import { DealerGroup } from "./DealerTable";
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
   dateStyle: "short",
 });
 
+const columns: ColumnsType<Price> = [
+  {
+    dataIndex: "searched_at",
+    title: "Searched",
+    render: (v) => dateFormatter.format(new Date(v)),
+  },
+  {
+    dataIndex: "part_code",
+    title: "Part Code",
+  },
+  {
+    dataIndex: "ic",
+    title: "IC",
+  },
+  {
+    dataIndex: "grade",
+    title: "Grade",
+  },
+  {
+    dataIndex: "stock_number",
+    title: "Stock #",
+  },
+  {
+    dataIndex: "price",
+    title: "Price",
+  },
+];
+
 export default function DealerPrices({ group }: { group: DealerGroup }) {
   const prices = usePrices().get(group.query);
-
   const [open, setOpen] = useState(false);
 
   return (
@@ -18,8 +48,11 @@ export default function DealerPrices({ group }: { group: DealerGroup }) {
       <Button
         disabled={!prices?.length}
         size="small"
-        style={{ width: "100%" }}
-        type="primary"
+        style={{
+          borderColor: purple.primary,
+          color: purple.primary,
+          width: "100%",
+        }}
         onClick={() => setOpen(true)}
       >
         <Space>
@@ -29,21 +62,20 @@ export default function DealerPrices({ group }: { group: DealerGroup }) {
       </Button>
 
       <Modal
+        centered
         destroyOnClose
         footer={false}
         open={open}
         onCancel={() => setOpen(false)}
       >
-        {prices?.map((p, i) => (
-          <Row key={`${p.dealer_query}-${i}`} gutter={[12, 12]}>
-            <Col>{dateFormatter.format(new Date(p.searched_at))}</Col>
-            <Col>{p.part_code}</Col>
-            <Col>{p.ic}</Col>
-            <Col>{p.grade}</Col>
-            <Col>{p.stock_number}</Col>
-            <Col>{p.price}</Col>
-          </Row>
-        ))}
+        <Table
+          columns={columns}
+          dataSource={prices}
+          rowKey={(row) => `${row.dealer_query}-${row.stock_number}`}
+          size="small"
+          pagination={false}
+          scroll={{ y: "80vh" }}
+        />
       </Modal>
     </>
   );
